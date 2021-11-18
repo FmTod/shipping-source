@@ -96,7 +96,7 @@ class RecursivePacker extends AbstractPacker
         // Pack remaining quantity recursively for a fairly accurate estimate
         if ($quantity > 1) {
             // Update item with converted unit values, remaining quantity, etc.
-            $item = array_merge($item, $lwh, ['weight'=>$weight, 'quantity'=>$quantity, 'options'=>$options]);
+            $item = array_merge($item, $lwh, ['weight' => $weight, 'quantity' => $quantity, 'options' => $options]);
             // Reset optional constraint status to that of single item after attempted merging
             $this->updateOptionalConstraints($this->single_item);
 

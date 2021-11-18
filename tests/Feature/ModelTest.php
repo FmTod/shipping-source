@@ -10,7 +10,7 @@ test('Constructor', function () {
 });
 
 test('AttributeManipulation', function () {
-    $model = new ModelStub;
+    $model = new ModelStub();
     $model->name = 'foo';
 
     $this->assertEquals('foo', $model->name);
@@ -24,15 +24,15 @@ test('AttributeManipulation', function () {
     $this->assertFalse(isset($model['name']));
 });
 
-test('NewInstanceWithAttributes', function() {
-    $model = new ModelStub;
+test('NewInstanceWithAttributes', function () {
+    $model = new ModelStub();
     $instance = $model->newInstance(['name' => 'john']);
 
     $this->assertEquals('john', $instance->name);
 });
 
-test('Hidden', function() {
-    $model = new ModelStub;
+test('Hidden', function () {
+    $model = new ModelStub();
     $model->password = 'secret';
 
     $attributes = $model->attributesToArray();
@@ -40,8 +40,8 @@ test('Hidden', function() {
     $this->assertEquals(['password'], $model->getHidden());
 });
 
-test('Visible', function() {
-    $model = new ModelStub;
+test('Visible', function () {
+    $model = new ModelStub();
     $model->setVisible(['name']);
     $model->name = 'John Doe';
     $model->city = 'Paris';
@@ -50,8 +50,8 @@ test('Visible', function() {
     $this->assertEquals(['name' => 'John Doe'], $attributes);
 });
 
-test('ToArray', function() {
-    $model = new ModelStub;
+test('ToArray', function () {
+    $model = new ModelStub();
     $model->name = 'foo';
     $model->bar = null;
     $model->password = 'password1';
@@ -71,12 +71,12 @@ test('ToArray', function() {
     $this->assertTrue(isset($array['password']));
 });
 
-test('ToJson', function() {
-    $model = new ModelStub;
+test('ToJson', function () {
+    $model = new ModelStub();
     $model->name = 'john';
     $model->foo = 10;
 
-    $object = new stdClass;
+    $object = new stdClass();
     $object->name = 'john';
     $object->foo = 10;
 
@@ -84,8 +84,8 @@ test('ToJson', function() {
     $this->assertEquals(json_encode($object), (string) $model);
 });
 
-test('Mutator', function() {
-    $model = new ModelStub;
+test('Mutator', function () {
+    $model = new ModelStub();
     $model->list_items = ['name' => 'john'];
     $this->assertEquals(['name' => 'john'], $model->list_items);
     $attributes = $model->getAttributes();
@@ -93,23 +93,23 @@ test('Mutator', function() {
 
     $birthday = strtotime('245 months ago');
 
-    $model = new ModelStub;
+    $model = new ModelStub();
     $model->birthday = '245 months ago';
 
     $this->assertEquals(date('Y-m-d', $birthday), $model->birthday);
     $this->assertEquals(20, $model->age);
 });
 
-test('ToArrayUsesMutators', function() {
-    $model = new ModelStub;
+test('ToArrayUsesMutators', function () {
+    $model = new ModelStub();
     $model->list_items = [1, 2, 3];
     $array = $model->toArray();
 
     $this->assertEquals([1, 2, 3], $array['list_items']);
 });
 
-test('Replicate', function() {
-    $model = new ModelStub;
+test('Replicate', function () {
+    $model = new ModelStub();
     $model->name = 'John Doe';
     $model->city = 'Paris';
 
@@ -118,20 +118,20 @@ test('Replicate', function() {
     $this->assertEquals($model->name, $clone->name);
 });
 
-test('Appends', function() {
-    $model = new ModelStub;
+test('Appends', function () {
+    $model = new ModelStub();
     $array = $model->toArray();
     $this->assertFalse(isset($array['test']));
 
-    $model = new ModelStub;
+    $model = new ModelStub();
     $model->setAppends(['test']);
     $array = $model->toArray();
     $this->assertTrue(isset($array['test']));
     $this->assertEquals('test', $array['test']);
 });
 
-test('ArrayAccess', function() {
-    $model = new ModelStub;
+test('ArrayAccess', function () {
+    $model = new ModelStub();
     $model->name = 'John Doen';
     $model['city'] = 'Paris';
 
@@ -139,8 +139,8 @@ test('ArrayAccess', function() {
     $this->assertEquals($model->city, $model['city']);
 });
 
-test('Serialize', function() {
-    $model = new ModelStub;
+test('Serialize', function () {
+    $model = new ModelStub();
     $model->name = 'john';
     $model->foo = 10;
 
@@ -148,8 +148,8 @@ test('Serialize', function() {
     $this->assertEquals($model, unserialize($serialized));
 });
 
-test('Casts', function() {
-    $model = new ModelStub;
+test('Casts', function () {
+    $model = new ModelStub();
     $model->score = '0.34';
     $model->data = ['foo' => 'bar'];
     $model->count = 1;
@@ -185,7 +185,7 @@ test('Casts', function() {
     $this->assertInstanceOf(Collection::class, $array['collection_data']);
 });
 
-test('Guarded', function() {
+test('Guarded', function () {
     $model = new ModelStub(['secret' => 'foo']);
     $this->assertTrue($model->isGuarded('secret'));
     $this->assertNull($model->secret);
@@ -203,7 +203,7 @@ test('Guarded', function() {
     ModelStub::reguard();
 });
 
-test('GuardedCallback', function() {
+test('GuardedCallback', function () {
     ModelStub::unguard();
     $mock = $this->getMockBuilder('stdClass')
         ->setMethods(['callback'])
@@ -216,7 +216,7 @@ test('GuardedCallback', function() {
     ModelStub::reguard();
 });
 
-test('TotallyGuarded', function() {
+test('TotallyGuarded', function () {
     $this->expectException(MassAssignmentException::class);
 
     $model = new ModelStub();
@@ -225,7 +225,7 @@ test('TotallyGuarded', function() {
     $model->fill(['name' => 'John Doe']);
 });
 
-test('Fillable', function() {
+test('Fillable', function () {
     $model = new ModelStub(['foo' => 'bar']);
     $this->assertFalse($model->isFillable('foo'));
     $this->assertNull($model->foo);
@@ -234,17 +234,17 @@ test('Fillable', function() {
     $model->foo = 'bar';
     $this->assertEquals('bar', $model->foo);
 
-    $model = new ModelStub;
+    $model = new ModelStub();
     $model->forceFill(['foo' => 'bar']);
     $this->assertEquals('bar', $model->foo);
 });
 
-test('Hydrate', function() {
+test('Hydrate', function () {
     $models = ModelStub::hydrate([['name' => 'John Doe']]);
     $this->assertEquals('John Doe', $models[0]->name);
 });
 
-test('Validate', function() {
+test('Validate', function () {
     $model = new ModelStub(['name' => 'bar']);
     $model->setRules(['name' => 'required|string']);
     $this->assertTrue($model->validate());

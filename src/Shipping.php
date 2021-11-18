@@ -112,8 +112,8 @@ class Shipping
 
                 // Add UPS packer to array
                 $shippers[$api_auth->provider->class] = [
-                    'name'=>$api_auth->provider->name,
-                    'packer'=>$packer,
+                    'name' => $api_auth->provider->name,
+                    'packer' => $packer,
                     'config' => [
                         'weight_unit' => 'LB',
                         'dimension_unit' => 'IN',
@@ -140,6 +140,7 @@ class Shipping
         foreach ($shippers as $key => $shipper) {
             // Stores any catalog that could not be packed so we can display an error message to the user
             $not_packed = [];
+
             try {
                 // Make the actual packages to ship
                 $packages = $shipper['packer']->makePackages($items, $not_packed);
@@ -199,7 +200,7 @@ class Shipping
         $packer = new DefaultPacker($max_package_weight, $max_package_length, $max_package_size, false, ['weight_unit' => 'LB', 'dimension_unit' => 'IN']);
         // Add UPS packer to array
         $shipper = [
-            'name'=> $selected_rate['class_name'],
+            'name' => $selected_rate['class_name'],
             'packer' => $packer,
             'config' => [
                 'weight_unit' => 'LB',
@@ -245,8 +246,8 @@ class Shipping
 
                 // Add UPS packer to array
                 $shippers[$api_auth->provider->class] = [
-                    'name'=>$api_auth->provider->name,
-                    'packer'=>$packer,
+                    'name' => $api_auth->provider->name,
+                    'packer' => $packer,
                     'config' => [
                         'weight_unit' => 'LB',
                         'dimension_unit' => 'IN',
@@ -273,6 +274,7 @@ class Shipping
         foreach ($shippers as $key => $shipper) {
             // Stores any catalog that could not be packed so we can display an error message to the user
             $not_packed = [];
+
             try {
                 // Make the actual packages to ship
                 $packages = $shipper['packer']->makePackages($items, $not_packed);

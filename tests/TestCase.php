@@ -2,9 +2,9 @@
 
 namespace FmTod\Shipping\Tests;
 
+use FmTod\Shipping\ShippingServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use FmTod\Shipping\ShippingServiceProvider;
 
 class TestCase extends Orchestra
 {

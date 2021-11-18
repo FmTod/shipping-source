@@ -65,7 +65,7 @@ class LabelResponse
      *
      * @return array
      */
-    public function toArray():array
+    public function toArray(): array
     {
         foreach ($this->labels as $label) {
             if ($label['tracking_number'] === $this->master_tracking_number) {

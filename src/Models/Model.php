@@ -20,7 +20,6 @@ use Illuminate\Validation\Factory as ValidatorFactory;
 use Illuminate\Validation\Validator;
 use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
-use RuntimeException;
 
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -359,7 +358,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public static function hydrate(array $items): array
     {
-        $instance = new static;
+        $instance = new static();
 
         return array_map(static function ($item) use ($instance) {
             return $instance->newInstance($item);
@@ -972,7 +971,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         $attributes = Arr::except($this->attributes, $except);
 
-        return with(new static)->fill($attributes);
+        return with(new static())->fill($attributes);
     }
 
     /**
@@ -1127,7 +1126,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public static function __callStatic(string $method, array $parameters)
     {
-        $instance = new static;
+        $instance = new static();
 
         return call_user_func_array([$instance, $method], $parameters);
     }

@@ -244,12 +244,14 @@ class Package
                 if (! empty($description)) {
                     $this->options[$key] = $description;
                 }
+
                 break;
             case 'insured_amount': // Amounts are added together if present
                 $value += (empty($this->options[$key]) ? 0 : $this->options[$key]);
                 if ($value > 0) {
                     $this->options[$key] = $value;
                 }
+
                 break;
             case 'type': // Both packages must have the same packing type
                 $type = (array_key_exists($key, $this->options) ? $this->options[$key] : '');
@@ -258,10 +260,12 @@ class Package
 
                     return false;
                 }
+
                 break;
             case 'additional_handling': // fall-through
             case 'signature_required':  // True if either package has this option
                 $this->options[$key] = (! empty($value) || ! empty($this->options[$key]));
+
                 break;
             default: // default behavior is to keep original value if present
                 if (! array_key_exists($key, $this->options)) {

@@ -5,7 +5,6 @@ namespace FmTod\Shipping\Services\ParcelPro;
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 use Serializable;
 

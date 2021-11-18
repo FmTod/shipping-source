@@ -9,7 +9,7 @@ use FmTod\Shipping\Services\ParcelPro;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
-test('Constructor', function() {
+test('Constructor', function () {
     $shipment = new Shipment(
         to: new Address([
             'name' => 'Fulanito Perez',
@@ -38,7 +38,7 @@ test('Constructor', function() {
             'is_residential' => false,
         ]),
         packages: [
-            new Package(10, [13, 10, 3])
+            new Package(10, [13, 10, 3]),
         ]
     );
 
@@ -50,7 +50,7 @@ test('Constructor', function() {
     $this->assertIsObject($service);
 });
 
-test('Carriers', function() {
+test('Carriers', function () {
     $shipment = new Shipment(
         to: new Address([
             'name' => 'Fulanito Perez',
@@ -79,7 +79,7 @@ test('Carriers', function() {
             'is_residential' => false,
         ]),
         packages: [
-            new Package(10, [13, 10, 3])
+            new Package(10, [13, 10, 3]),
         ]
     );
 
@@ -95,7 +95,7 @@ test('Carriers', function() {
     $this->assertInstanceOf(Carrier::class, $carriers[0]);
 });
 
-test('Services', function() {
+test('Services', function () {
     $shipment = new Shipment(
         to: new Address([
             'name' => 'Fulanito Perez',
@@ -124,7 +124,7 @@ test('Services', function() {
             'is_residential' => false,
         ]),
         packages: [
-            new Package(10, [13, 10, 3])
+            new Package(10, [13, 10, 3]),
         ]
     );
 
@@ -140,7 +140,7 @@ test('Services', function() {
     $this->assertInstanceOf(Service::class, $services[0]);
 });
 
-test('Rates', function() {
+test('Rates', function () {
     $shipment = new Shipment(
         to: new Address([
             'name' => 'Fulanito Perez',
@@ -169,7 +169,7 @@ test('Rates', function() {
             'is_residential' => false,
         ], true),
         packages: [
-            new Package(10, [13, 10, 3])
+            new Package(10, [13, 10, 3]),
         ]
     );
 

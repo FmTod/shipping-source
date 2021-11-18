@@ -157,7 +157,7 @@ class Shippo extends Service implements ShippingService
         $shipment_to = $this->shipment->getShipToAddress();
 
         $data = [
-            'address_from'=> [
+            'address_from' => [
                 'name' => $shipment_from->get('name'),
                 'company' => $shipment_from->get('company'),
                 'street1' => $shipment_from->get('address1'),
@@ -170,7 +170,7 @@ class Shippo extends Service implements ShippingService
                 'email' => $shipment_from->get('email'),
                 'is_residential' => $shipment_from->get('is_residential'),
             ],
-            'address_to'=> [
+            'address_to' => [
                 'name' => $shipment_to->get('name'),
                 'company' => $shipment_to->get('company'),
                 'street1' => $shipment_to->get('address1'),
@@ -183,17 +183,17 @@ class Shippo extends Service implements ShippingService
                 'email' => $shipment_to->get('email'),
                 'is_residential' => $shipment_to->get('is_residential'),
             ],
-            'async'=> false,
+            'async' => false,
         ];
 
         foreach ($this->shipment->getPackages() as $package) {
             $data['parcels'][] = [
-                'length'=> ($package->get('length')),
-                'width'=> ($package->get('width')),
-                'height'=> ($package->get('height')),
-                'distance_unit'=> strtolower($this->config['dimension_unit']),
-                'weight'=> ($package->get('weight')),
-                'mass_unit'=> strtolower($this->config['weight_unit']),
+                'length' => ($package->get('length')),
+                'width' => ($package->get('width')),
+                'height' => ($package->get('height')),
+                'distance_unit' => strtolower($this->config['dimension_unit']),
+                'weight' => ($package->get('weight')),
+                'mass_unit' => strtolower($this->config['weight_unit']),
             ];
         }
 
@@ -273,7 +273,7 @@ class Shippo extends Service implements ShippingService
         $shipment_to = $this->shipment->getShipToAddress();
 
         $data = [
-            'address_from'=> [
+            'address_from' => [
                 'name' => $shipment_from->get('name'),
                 'company' => $shipment_from->get('company'),
                 'street1' => $shipment_from->get('address1'),
@@ -286,7 +286,7 @@ class Shippo extends Service implements ShippingService
                 'email' => $shipment_from->get('email'),
                 'is_residential' => $shipment_from->get('is_residential'),
             ],
-            'address_to'=> [
+            'address_to' => [
                 'name' => $shipment_to->get('name'),
                 'company' => $shipment_to->get('company'),
                 'street1' => $shipment_to->get('address1'),
@@ -299,17 +299,17 @@ class Shippo extends Service implements ShippingService
                 'email' => $shipment_to->get('email'),
                 'is_residential' => $shipment_to->get('is_residential'),
             ],
-            'async'=> false,
+            'async' => false,
         ];
 
         foreach ($this->shipment->getPackages() as $package) {
             $data['parcels'][] = [
-                'length'=> ($package->get('length')),
-                'width'=> ($package->get('width')),
-                'height'=> ($package->get('height')),
-                'distance_unit'=> strtolower($this->config['dimension_unit']),
-                'weight'=> ($package->get('weight')),
-                'mass_unit'=> strtolower($this->config['weight_unit']),
+                'length' => ($package->get('length')),
+                'width' => ($package->get('width')),
+                'height' => ($package->get('height')),
+                'distance_unit' => strtolower($this->config['dimension_unit']),
+                'weight' => ($package->get('weight')),
+                'mass_unit' => strtolower($this->config['weight_unit']),
             ];
         }
 

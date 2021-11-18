@@ -2,9 +2,9 @@
 
 namespace FmTod\Shipping;
 
+use FmTod\Shipping\Commands\ShippingCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use FmTod\Shipping\Commands\ShippingCommand;
 
 class ShippingServiceProvider extends PackageServiceProvider
 {

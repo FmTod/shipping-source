@@ -2,8 +2,6 @@
 
 namespace FmTod\Shipping\Models;
 
-use JetBrains\PhpStorm\ArrayShape;
-
 /**
  * Class Provider.
  *

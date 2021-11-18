@@ -138,6 +138,7 @@ class Measure
         case 'centimeters':
             return 'cm';
         }
+
         throw new \InvalidArgumentException('Unrecognized unit of measure: '.print_r($unit, true));
     }
 }
