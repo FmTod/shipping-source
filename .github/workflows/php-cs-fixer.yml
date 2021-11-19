@@ -17,7 +17,14 @@ jobs:
         with:
           args: --config=.php_cs.dist.php --allow-risky=yes
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
         with:
-          commit_message: Fix styling
+          commit-message: Fix styling
+          delete-branch: true
+          title: PHP CS Fixer
+
+#      - name: Commit changes
+#        uses: stefanzweifel/git-auto-commit-action@v4
+#        with:
+#          commit_message: Fix styling
