@@ -18,7 +18,7 @@ class Duration extends Model
     ];
 
     protected array $casts = [
-        'days' => 'int'
+        'days' => 'int',
     ];
 
     protected array $rules = [
