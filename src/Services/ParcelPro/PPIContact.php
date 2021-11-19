@@ -7,7 +7,6 @@ use FmTod\Shipping\Services\ParcelPro\Enums\ContactType;
 class PPIContact extends PPIObject
 {
     protected array $data = [
-        'ContactId' => 'NOID',
         'ContactType' => ContactType::Location,
         'CompanyName' => '',
         'FirstName' => '',

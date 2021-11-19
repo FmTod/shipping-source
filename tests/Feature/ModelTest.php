@@ -249,6 +249,6 @@ test('Validate', function () {
     $model->setRules(['name' => 'required|string']);
     $this->assertTrue($model->validate());
 
-    $model->addRule('bar', 'required|string');
+    $model->setRule('bar', 'required|string');
     $this->assertFalse($model->validate());
 });

@@ -1,154 +1,28 @@
 <?php
 
+use FmTod\Money\Money;
 use FmTod\Shipping\Models\Address;
 use FmTod\Shipping\Models\Carrier;
+use FmTod\Shipping\Models\Duration;
 use FmTod\Shipping\Models\Package;
+use FmTod\Shipping\Models\Provider;
+use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Services\ParcelPro;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
-test('Constructor', function () {
+beforeEach(function () {
+    $this->locale = 'en_US';
+
     $shipment = new Shipment(
         to: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
+            'first_name' => 'Fulanito',
+            'last_name' => 'Perez',
+            'phone' => '7862691385',
+            'email' => faker()->freeEmail,
             'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        from: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        packages: [
-            new Package(10, [13, 10, 3]),
-        ]
-    );
-
-    $service = new ParcelPro([
-        "client_key" => "645157API",
-        "client_secret" => "Credentials645157",
-    ], $shipment);
-
-    $this->assertIsObject($service);
-});
-
-test('Carriers', function () {
-    $shipment = new Shipment(
-        to: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        from: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        packages: [
-            new Package(10, [13, 10, 3]),
-        ]
-    );
-
-    $service = new ParcelPro([
-        "client_key" => "645157API",
-        "client_secret" => "Credentials645157",
-    ], $shipment);
-
-    $carriers = $service->getCarriers();
-
-    $this->assertIsArray($carriers);
-    $this->assertIsObject($carriers[0]);
-    $this->assertInstanceOf(Carrier::class, $carriers[0]);
-});
-
-test('Services', function () {
-    $shipment = new Shipment(
-        to: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        from: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => 'example@example.com',
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ]),
-        packages: [
-            new Package(10, [13, 10, 3]),
-        ]
-    );
-
-    $service = new ParcelPro([
-        "client_key" => "645157API",
-        "client_secret" => "Credentials645157",
-    ], $shipment);
-
-    $services = $service->getServices();
-
-    $this->assertIsArray($services);
-    $this->assertIsObject($services[0]);
-    $this->assertInstanceOf(Service::class, $services[0]);
-});
-
-test('Rates', function () {
-    $shipment = new Shipment(
-        to: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => faker()->email,
-            'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
             'city' => 'Miami',
             'state' => 'FL',
             'postal_code' => '33131',
@@ -156,36 +30,75 @@ test('Rates', function () {
             'is_residential' => false,
         ], true),
         from: new Address([
-            'name' => 'Fulanito Perez',
-            'company' => 'Fulano',
-            'phone' => '1237894565',
-            'email' => faker()->email,
+            'first_name' => 'Fulanito',
+            'last_name' => 'Perez',
+            'phone' => '7862691385',
+            'email' => faker()->freeEmail,
             'address1' => '169 E Flagler St',
-            'address2' => 'Ste 1041',
             'city' => 'Miami',
             'state' => 'FL',
             'postal_code' => '33131',
             'country_code' => 'US',
             'is_residential' => false,
         ], true),
-        packages: [
-            new Package(10, [13, 10, 3]),
-        ]
+        packages: [new Package(10, [13, 10, 3])]
     );
 
-    $shipper = new ParcelPro([
+    $this->service = new ParcelPro([
         "client_key" => "645157API",
         "client_secret" => "Credentials645157",
     ], $shipment);
+});
 
-    $carrier = $shipper->getCarriers()->first();
-    $this->assertInstanceOf(Carrier::class, $carrier);
+test('Constructor', function() {
+    expect($this->service)->toBeInstanceOf(ParcelPro::class);
+});
 
-    $services = $shipper->getServices();
-    $this->assertInstanceOf(Collection::class, $services);
+test('Carriers', function() {
+    $carriers = $this->service->getCarriers();
+
+    expect($carriers)->toBeInstanceOf(Collection::class);
+    expect($carriers->first())->toBeInstanceOf(Carrier::class);
+});
+
+test('Services', function() {
+    $services = $this->service->getServices();
+
+    expect($services)->toBeInstanceOf(Collection::class);
+    expect($services->first())->toBeInstanceOf(Service::class);
+});
+
+test('Estimator', function() {
+    $rates = $this->service->getRates();
+    expect($rates)->toBeInstanceOf(Collection::class);
+
+    $rate = $rates->first();
+    expect($rate)->toBeInstanceOf(Rate::class);
+    expect($rate->provider)->toBeInstanceOf(Provider::class);
+    expect($rate->carrier)->toBeInstanceOf(Carrier::class);
+    expect($rate->service)->toBeInstanceOf(Service::class);
+    expect($rate->duration)->toBeInstanceOf(Duration::class);
+    expect($rate->duration->days)->toBeInt();
+    expect($rate->duration->terms)->toBeString();
+    expect($rate->amount)->toBeInstanceOf(Money::class);
+});
+
+test('Rates', function() {
+    $carrier = $this->service->getCarriers()->first();
+    expect($carrier)->toBeInstanceOf(Carrier::class);
+
+    $services = $this->service->getServices();
+    expect($services)->toBeInstanceOf(Collection::class);
 
     $service = $services->where('carrier', $carrier->value)->first();
-    $this->assertInstanceOf(Service::class, $service);
+    expect($service)->toBeInstanceOf(Service::class);
 
-    $rate = $shipper->getRate($carrier, $service);
+    $rate = $this->service->getRate($carrier, $service);
+    expect($rate->provider)->toBeInstanceOf(Provider::class);
+    expect($rate->carrier)->toBeInstanceOf(Carrier::class);
+    expect($rate->service)->toBeInstanceOf(Service::class);
+    expect($rate->duration)->toBeInstanceOf(Duration::class);
+    expect($rate->duration->days)->toBeInt();
+    expect($rate->duration->terms)->toBeString();
+    expect($rate->amount)->toBeInstanceOf(Money::class);
 });

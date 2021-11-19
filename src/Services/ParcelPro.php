@@ -41,7 +41,7 @@ class ParcelPro extends ShippingProvider
 
         $this->carriers = collect([
             new Carrier(['name' => 'UPS', 'value' => 'UPS']),
-            new Carrier(['name' => 'FedEx', 'value' => 'UPS']),
+            new Carrier(['name' => 'FedEx', 'value' => 'FedEx']),
         ]);
     }
 
@@ -130,7 +130,7 @@ class ParcelPro extends ShippingProvider
      *
      * @throws \Exception
      */
-    private function fetchServices(Carrier|string $carrier = null, bool $domestic = null): Collection
+    public function fetchServices(Carrier|string $carrier = null, bool $domestic = null): Collection
     {
         if ($carrier === null) {
             return collect($this->getCarriers())
@@ -166,8 +166,8 @@ class ParcelPro extends ShippingProvider
     /**
      * Get all the available services for the user.
      *
-     * @return Service[]
-     * @throws Exception
+     * @return \Illuminate\Support\Collection
+     * @throws \Exception
      */
     public function getServices(): Collection
     {
@@ -214,19 +214,22 @@ class ParcelPro extends ShippingProvider
      * Transform estimator array response to Rate object.
      *
      * @param array $rate
-     * @param $carrierCode
      * @return \FmTod\Shipping\Models\Rate
-     * @throws \Exception
+     * @throws \Throwable
      */
-    private function parseRate(array $rate, $carrierCode): Rate
+    private function parseRate(array $rate): Rate
     {
-        $serviceDetails = $this->getServiceDetails($rate['ServiceCode']);
-
-        $carrierName = match (strtolower($rate['CarrierCode'])) {
+        $carrierValue = match (strtolower($rate['CarrierCode'])) {
             'fedex' => 'FedEx',
             'ups' => 'UPS',
             default => $rate['CarrierCode']
         };
+
+        $carrier = $this->getCarriers()->where('value', $carrierValue)->first();
+        throw_if(! $carrier, 'Could not identify the carrier from the retrieved quote.');
+
+        $service = $this->getServices()->where('value', $rate['ServiceCode'])->first();
+        throw_if(! $service, 'Could not identify the service from the retrieved quote.');
 
         return new Rate([
             'id' => $rate['QuoteID'],
@@ -234,14 +237,8 @@ class ParcelPro extends ShippingProvider
                 'name' => 'ParcelPro',
                 'class' => self::class,
             ]),
-            'carrier' => new Carrier([
-                'name' => $carrierName,
-                'value' => $carrierCode,
-            ]),
-            'service' => new Service([
-                'name' => "$carrierName {$serviceDetails['ServiceCodeDesc']}",
-                'value' => $rate['ServiceCode'],
-            ]),
+            'carrier' => $carrier,
+            'service' => $service,
             'duration' => new Duration([
                 'days' => $this->getTransitTime($rate),
                 'delivery_by' => $rate['DeliveryByTime'] ?? null,
@@ -271,9 +268,9 @@ class ParcelPro extends ShippingProvider
         return new PPIContact([
             'FirstName' => $address->first_name,
             'LastName' => $address->last_name,
-            'CompanyName' => $address->company,
+            'CompanyName' => $address->company ?? $address->full_name,
             'StreetAddress' => $address->address1,
-            'ApartmentSuite' => $address->address2,
+            'ApartmentSuite' => $address->address2 ?? '',
             'City' => $address->city,
             'State' => $address->state,
             'Zip' => (str_contains($address->postal_code, '-') ? substr($address->postal_code, 0, strpos($address->postal_code, '-')) : $address->postal_code),
@@ -284,8 +281,6 @@ class ParcelPro extends ShippingProvider
             'IsResidential' => (! empty($address->is_residential) ? $address->is_residential : false),
         ]);
     }
-
-    //<editor-fold desc="Rates">
 
     /**
      * Get a rate for the specified carrier and service.
@@ -316,7 +311,10 @@ class ParcelPro extends ShippingProvider
         }
 
         $quote = new PPIQuote([
-            'CarrierCode' => $carrier,
+            'CarrierCode' => match (strtolower($carrier)) {
+                'ups' => 1,
+                'fedex' => 2,
+            },
             'ServiceCode' => $service,
             'ShipFrom' => $this->buildContact($shipFrom),
             'ShipTo' => $this->buildContact($shipTo),
@@ -324,29 +322,20 @@ class ParcelPro extends ShippingProvider
             'Width' => ceil($packages[0]->get('width')),
             'Height' => ceil($packages[0]->get('height')),
             'Weight' => ceil($packages[0]->get('weight')),
+            'InsuredValue' => $parameters['insurance'] ?? 1,
+            'IsDeliveryConfirmation' => $parameters['adult_signature'] ?? false,
+            'IsSaturdayDelivery' => $parameters['saturday_delivery'] ?? false,
+            'ReferenceNumber' => $parameters['reference'] ?? '',
+            'CustomerReferenceNumber' => $parameters['reference'] ?? '',
         ]);
 
-        if (isset($parameters['insurance'])) {
-            $quote->InsuredValue = $parameters['insurance'];
-        }
+        $rate = $this->request('quotes', $quote->toArray(), 'POST')
+            ->collect('Estimator')
+            ->first();
 
-        if (isset($parameters['adult_signature']) && $parameters['adult_signature'] === true) {
-            $quote->IsDeliveryConfirmation = true;
-        }
+        throw_if(! $rate, 'There was an error retrieving the rates.');
 
-        if (isset($parameters['saturday_delivery']) && $parameters['saturday_delivery'] === true) {
-            $quote->IsSaturdayDelivery = true;
-        }
-
-        $response = $this->request('quotes', $quote->toArray(), 'POST')->json();
-
-        if (empty($response['Estimator']) || count($response['Estimator']) === 0) {
-            throw new Exception('There was an error retrieving the rates.');
-        }
-
-        $rate = $response['Estimator'][0];
-
-        return $this->parseRate($rate, $response['CarrierCode']);
+        return $this->parseRate($rate);
     }
 
     /**
@@ -354,12 +343,11 @@ class ParcelPro extends ShippingProvider
      *      sends the request to the UPS API and returns a RateResponse object.
      *
      * @param array $options
-     * @return Rate[]
-     * @throws Exception
-     * @version 07/07/2015
-     * @since 12/02/2012
+     * @return Collection
+     *
+     * @throws \Throwable
      */
-    public function getRates(array $options = []): array
+    public function getRates(array $options = []): Collection
     {
         $shipment = $this->getShipment();
 
@@ -369,135 +357,22 @@ class ParcelPro extends ShippingProvider
         $shipTo = $shipment->getShipToAddress();
         $packages = $shipment->getPackages();
 
-        $request = new PPIEstimatorRequest();
-        $request->ShipFrom = (array) $shipFrom;
-        $request->ShipTo = (array) $shipTo;
-        $request->Length = ceil($packages[0]->get('length'));
-        $request->Width = ceil($packages[0]->get('width'));
-        $request->Height = ceil($packages[0]->get('height'));
-        $request->Weight = ceil($packages[0]->get('weight'));
-
-        if (isset($options['insurance'])) {
-            $request->InsuredValue = $options['insurance'];
-        }
-
-        if (isset($options['adult_signature']) && $options['adult_signature'] === true) {
-            $request->IsDeliveryConfirmation = true;
-        }
-
-        if (isset($options['saturday_delivery']) && $options['saturday_delivery'] === true) {
-            $request->IsSaturdayDelivery = true;
-        }
-
-        $result = $this->request('estimator', $request, 'POST');
-
-        // Get the shipment object
-        $this->Response = json_decode($result);
-
-        // check on the response status
-        if ($this->getResponseStatus() !== 'Success') {
-            throw new Exception('There was an error retrieving the rates.');
-        }
-        // fill the RateResponse object with package details for each shipment method
-        return $this->getResponseRates((array) $request);
-    }
-
-    /**
-     * Extracts and returns rates for the services from the SOAP response object.
-     *
-     * @param $params
-     * @return Rate[] an array of Rate objects containing the rate data for each service
-     * @throws Exception
-     * @version updated 12/09/2012
-     * @since 12/08/2012
-     */
-    protected function getResponseRates($params): array
-    {
-        // extract the rates from the SOAP response object
-        $rates = $this->Response->Estimator;
-        // make sure that $rates is not empty
-        if (empty($rates)) {
-            throw new UnexpectedValueException('Failed to retrieve shipping rates from API.');
-        }
-        // initialize the output array
-        $output = [];
-
-        // if there are more than one rates, $rates will be an array of objects
-        foreach ($rates as $rate) {
-            $output[] = $this->getResponseRatesWorker($rate, $params);
-        }
-
-        // return the completed array
-        return $output;
-    }
-
-    /**
-     * Extracts the data for a single rate service (used by getResponseRates).
-     *
-     * @param object $rate is an object containing data for a single rate service
-     * @param array $params
-     * @return Rate
-     * @throws Exception
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @since 12/08/2012
-     * @version updated 12/09/2012
-     */
-    protected function getResponseRatesWorker($rate, $params = []): Rate
-    {
-        // If it is a multiple rate request, assign a quoteId to each rate instead of returning the same QuoteId for every rate
-        $params = array_merge($params, [
-            'CarrierCode' => FmTod\Shipping\APIs\ParcelPro\Enums\Carriers::getValue($rate->CarrierCode),
-            'ServiceCode' => $rate->ServiceCode,
-            'PackageCode' => '02',
-            'ShipDate' => date('Y-m-d'),
+        $request = new PPIEstimatorRequest([
+            'ShipFrom' => $this->buildContact($shipFrom),
+            'ShipTo' => $this->buildContact($shipTo),
+            'Length' => ceil($packages[0]->get('length')),
+            'Width' => ceil($packages[0]->get('width')),
+            'Height' => ceil($packages[0]->get('height')),
+            'Weight' => ceil($packages[0]->get('weight')),
+            'InsuredValue' => $options['insurance'] ?? 1,
+            'IsDeliveryConfirmation' => $options['adult_signature'] ?? false,
+            'IsSaturdayDelivery' => $options['saturday_delivery'] ?? false,
         ]);
 
-        // Due to Parcel Pro not assigning a unique Id to every quote(Estimator) we need to query each quote individually and use that quote id instead
-        $result = $this->sendRequest('quote', $params, false, 'POST');
-        $quotes = json_decode($result, true);
-        $quote = $quotes['Estimator'][0];
-
-        // (re)initialize the array holder for the loop
-        $array = [];
-        // build an array for this rate's information
-        $service_text = ucwords(strtolower($rate['ServiceCodeDescription']));
-        $duration_estimated = ($quote['ServiceCode'] === '03-DOM' ? 2 : $rate['BusinessDaysInTransit']);
-
-        if ($rate['CarrierCode'] === 'Fedex') {
-            $carrier_code = 'FedEx';
-        } elseif ($rate['CarrierCode'] === 'Ups') {
-            $carrier_code = 'UPS';
-        } else {
-            $carrier_code = $rate['CarrierCode'];
-        }
-
-        return new Rate([
-            'id' => $quote['QuoteID'],
-            'provider' => [
-                'name' => 'ParcelPro',
-                'class' => 'ParcelPro',
-                'access_token' => $this->config['session_id'],
-            ],
-            'carrier' => [
-                'name' => $carrier_code,
-                'value' => FmTod\Shipping\APIs\ParcelPro\Enums\Carriers::getValue($rate['CarrierCode']),
-            ],
-            'service' => [
-                'name' => ($carrier_code).' '.str_replace('Fedex ', '', $service_text),
-                'value' => $rate['ServiceCode'],
-            ],
-            'duration_estimated' => $duration_estimated,
-            'duration_terms' => (! empty($rate['DeliveryByTime']) ? "Delivered by {$rate['DeliveryByTime']}" : $duration_estimated.' Transit Day'.($duration_estimated > 1 ? 's' : '')),
-            'attributes' => [],
-            'messages' => $rate['EstimatorDetail'],
-            'amount' => [
-                'currency_code' => 'USD',
-                'value' => $rate['TotalCharges'],
-            ],
-        ]);
+        return $this->request('estimator', $request->toArray(), 'POST')
+            ->collect('Estimator')
+            ->map(fn ($rate) => $this->parseRate($rate));
     }
-
-    //</editor-fold>
 
     //<editor-fold desc="Label">
 

@@ -743,6 +743,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public function getAttribute(string $key): mixed
     {
         if (! array_key_exists($key, $this->attributes) &&
+            ! array_key_exists($key, $this->fillable) &&
             ! array_key_exists($key, $this->casts) &&
             ! $this->hasGetMutator($key)) {
             throw new \RuntimeException("Specified attribute [$key] is not valid.");

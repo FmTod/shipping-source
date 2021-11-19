@@ -15,7 +15,7 @@ class Provider extends Model
         'class',
     ];
 
-    protected static array $rules = [
+    protected array $rules = [
         'name' => 'required|string',
         'class' => 'required|string',
     ];

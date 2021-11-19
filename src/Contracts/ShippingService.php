@@ -6,6 +6,7 @@ use FmTod\Shipping\Models\Carrier;
 use FmTod\Shipping\Models\LabelResponse;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
+use Illuminate\Support\Collection;
 
 interface ShippingService
 {
@@ -17,7 +18,7 @@ interface ShippingService
 
     public function setConfig(array $config);
 
-    public function getRates(array $options = []): array;
+    public function getRates(array $options = []): Collection;
 
     public function getRate(Carrier|string $carrier, Service|string $service, array $parameters = []): Rate;
 

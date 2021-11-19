@@ -6,6 +6,7 @@ namespace FmTod\Shipping\Models;
  * Class Service.
  *
  * @property string|null $name
+ * @property string|null $carrier
  * @property string $value
  * @property array $data
  */

@@ -14,12 +14,17 @@ class Duration extends Model
     protected array $fillable = [
         'days',
         'terms',
+        'delivery_by',
     ];
 
-    protected static array $rules = [
+    protected array $casts = [
+        'days' => 'int'
+    ];
+
+    protected array $rules = [
         'days' => 'required|int',
-        'terms' => 'sometimes|nullable',
-        'delivery_by' => 'sometimes|nullable',
+        'terms' => 'sometimes|nullable|string',
+        'delivery_by' => 'sometimes|nullable|string',
     ];
 
     /**
