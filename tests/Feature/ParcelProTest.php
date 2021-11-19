@@ -50,25 +50,25 @@ beforeEach(function () {
     ], $shipment);
 });
 
-test('Constructor', function() {
+test('Constructor', function () {
     expect($this->service)->toBeInstanceOf(ParcelPro::class);
 });
 
-test('Carriers', function() {
+test('Carriers', function () {
     $carriers = $this->service->getCarriers();
 
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Carrier::class);
 });
 
-test('Services', function() {
+test('Services', function () {
     $services = $this->service->getServices();
 
     expect($services)->toBeInstanceOf(Collection::class);
     expect($services->first())->toBeInstanceOf(Service::class);
 });
 
-test('Estimator', function() {
+test('Estimator', function () {
     $rates = $this->service->getRates();
     expect($rates)->toBeInstanceOf(Collection::class);
 
@@ -83,7 +83,7 @@ test('Estimator', function() {
     expect($rate->amount)->toBeInstanceOf(Money::class);
 });
 
-test('Rates', function() {
+test('Rates', function () {
     $carrier = $this->service->getCarriers()->first();
     expect($carrier)->toBeInstanceOf(Carrier::class);
 
