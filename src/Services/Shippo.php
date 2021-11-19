@@ -5,7 +5,7 @@ namespace FmTod\Shipping\Services;
 use Exception;
 use FmTod\Shipping\Contracts\Shippable;
 use FmTod\Shipping\Contracts\ShippingService;
-use FmTod\Shipping\Models\LabelResponse;
+use FmTod\Shipping\Models\Label;
 use FmTod\Shipping\Models\Rate;
 use Shippo_CarrierAccount;
 use Shippo_Transaction;
@@ -374,13 +374,13 @@ class Shippo extends Service implements ShippingService
      *      sends the request to the UPS API and returns a RateResponse object.
      *
      * @param Rate $rate parameters for label creation
-     * @return \FmTod\Shipping\Models\LabelResponse
+     * @return \FmTod\Shipping\Models\Label
      *
      * @throws \Exception
      * @since 12/09/2012
      * @version 07/07/2015
      */
-    public function createLabel(Rate $rate): LabelResponse
+    public function createLabel(Rate $rate): Label
     {
         $transaction = Shippo_Transaction::create([
             'rate' => $rate->id,
@@ -396,7 +396,7 @@ class Shippo extends Service implements ShippingService
         }
 
         // as long as the request was successful, create the RateResponse object and fill it
-        $response = new LabelResponse();
+        $response = new Label();
         $response->provider = $rate->provider->name;
         $response->carrier = $rate->carrier->name;
         $response->service = $rate->service->name;

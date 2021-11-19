@@ -5,14 +5,17 @@ namespace FmTod\Shipping\Services;
 use Exception;
 use FmTod\Money\Money;
 use FmTod\Shipping\Contracts\Shippable;
+use FmTod\Shipping\Enums\LabelType;
 use FmTod\Shipping\Models\Address;
 use FmTod\Shipping\Models\Carrier;
 use FmTod\Shipping\Models\Duration;
-use FmTod\Shipping\Models\LabelResponse;
+use FmTod\Shipping\Models\Label;
 use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
+use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Services\ParcelPro\Enums\ContactType;
+use FmTod\Shipping\Services\ParcelPro\Enums\ShipmentStatus;
 use FmTod\Shipping\Services\ParcelPro\PPIContact;
 use FmTod\Shipping\Services\ParcelPro\PPIEstimatorRequest;
 use FmTod\Shipping\Services\ParcelPro\PPIQuote;
@@ -23,7 +26,6 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use JetBrains\PhpStorm\ArrayShape;
-use UnexpectedValueException;
 
 class ParcelPro extends ShippingProvider
 {
@@ -179,25 +181,6 @@ class ParcelPro extends ShippingProvider
     }
 
     /**
-     * Get service details for the specified service code.
-     *
-     * @param $serviceCode
-     * @return Service|bool
-     *
-     * @throws \Exception
-     */
-    private function getServiceDetails($serviceCode): Service|bool
-    {
-        foreach ($this->getServices() as $service) {
-            if ($service->value === (string) $serviceCode) {
-                return $service;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Get transit time in number of days.
      *
      * @param array $rate
@@ -294,7 +277,7 @@ class ParcelPro extends ShippingProvider
      */
     public function getRate(Carrier|string $carrier, Service|string $service, array $parameters = []): Rate
     {
-        $shipment = $this->getShipment();
+        $shipment = $this->getShippable();
 
         throw_if(! $shipment, 'No shipment was provided.');
 
@@ -349,7 +332,7 @@ class ParcelPro extends ShippingProvider
      */
     public function getRates(array $options = []): Collection
     {
-        $shipment = $this->getShipment();
+        $shipment = $this->getShippable();
 
         throw_if(! $shipment, 'No shipment was provided.');
 
@@ -374,101 +357,38 @@ class ParcelPro extends ShippingProvider
             ->map(fn ($rate) => $this->parseRate($rate));
     }
 
-    //<editor-fold desc="Label">
-
     /**
      * Compiles the required information for obtaining a shipping rate quote into the UPS array and using sendRequest()
      *      sends the request to the UPS API and returns a RateResponse object.
      *
      * @param Rate $rate
-     * @return LabelResponse
+     * @return \FmTod\Shipping\Models\Shipment
      * @throws Exception*@throws \GuzzleHttp\Exception\GuzzleException
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @version 07/07/2015
      * @since 12/09/2012
      */
-    public function createLabel(Rate $rate): LabelResponse
+    public function createShipment(Rate $rate): Shipment
     {
-        $this->config['session_id'] = $rate->provider->access_token;
+        $shipment = $this->request("shipments/$rate->id", [], 'POST')->json();
 
-        $transaction = $this->sendRequest('shipment/'.$rate->id, [], false, 'POST');
-
-        $this->Response = json_decode($transaction, true);
-
-        // build parameter for RatesResponse object
-        $status = FmTod\Shipping\APIs\ParcelPro\Enums\ShipmentStatus::getKey($this->Response->Status);
-        // if there was an error, throw an exception
-        if ($status === 'Exception') {
+        if (ShipmentStatus::getKey($shipment['Status']) === 'Exception') {
             throw new Exception('There was an error creating the label.');
         }
 
-        //return $this->Response->__toArray(true);
-        // as long as the request was successful, create the RateResponse object and fill it
-        $Response = new LabelResponse();
-        $Response->provider = $rate->provider->name;
-        $Response->carrier = $rate->carrier->name;
-        $Response->estimated_days = $rate->duration_estimated;
-        $Response->service = $rate->service->name;
-        $Response->shipment_cost = $rate->amount->value;
-        $Response->master_tracking_number = $this->Response->TrackingNumber;
-        //$Response->shipment_id = $this->Response->ShipmentID;
-        $Response->labels = $this->getResponseLabels();
-        // return LabelResponse object
-        return $Response;
+        return new Shipment([
+            'provider' => $rate->provider,
+            'carrier' => $rate->carrier,
+            'service' => $rate->service,
+            'duration' => $rate->duration,
+            'amount' => $rate->amount,
+            'tracking_number' => $shipment['TrackingNumber'],
+            'labels' => collect([new Label([
+                'name' => $shipment['TrackingNumber'],
+                'content' => $shipment['LabelImageFull'],
+                'type' => LabelType::Base64
+            ])]),
+            'data' => $shipment,
+        ]);
     }
-
-    /**
-     * Extracts the label(s) information from the SOAP response object.
-     *
-     * @return array with the label(s) data
-     * @throws UnexpectedValueException
-     * @version updated 01/08/2013
-     * @since 01/08/2013
-     */
-    protected function getResponseLabels(): array
-    {
-        // extract the rates from the SOAP response object
-        $labels = $this->Response;
-        // make sure that $rates is not empty
-        if (empty($labels)) {
-            throw new UnexpectedValueException('Failed to retrieve shipping labels from API.');
-        }
-        // initialize the output array
-        $output = [];
-        // if there are more than one rates, $rates will be an array of objects
-        if (is_array($labels)) {
-            // loop through rates
-            foreach ($labels as $label) {
-                // append each label array to the output
-                $output[] = $this->getResponseLabelsWorker($label);
-            }
-        } else {
-            // there is only one label
-            $output[] = $this->getResponseLabelsWorker($labels);
-        }
-        // return the labels array
-        return $output;
-    }
-
-    /**
-     * Extracts the data for an individual label from the SOAP response object (used by getResponseLabels).
-     *
-     * @param $label
-     * @return array with the label's data
-     * @since 01/08/2013
-     * @version updated 01/17/2013
-     */
-    protected function getResponseLabelsWorker($label): array
-    {
-        // (re)initialize the array holder for the loop
-        $array = [];
-        // build an array for this rate's information
-        $array['tracking_number'] = $label['TrackingNumber'];
-        $array['label_url'] = "http://parcelpro.com/printthermal.aspx?shipmentId={$label['ShipmentId']}&sessionId=".$this->config['session_id'];
-        $array['label_file_type'] = 'pdf';
-        // return the array
-        return $array;
-    }
-
-    //</editor-fold>
 }

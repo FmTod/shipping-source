@@ -8,7 +8,7 @@ use FmTod\Shipping\Models\Package;
 use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
-use FmTod\Shipping\Models\Shipment;
+use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use FmTod\Shipping\Services\ParcelPro;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
@@ -16,7 +16,7 @@ use function Pest\Faker\faker;
 beforeEach(function () {
     $this->locale = 'en_US';
 
-    $shipment = new Shipment(
+    $shipment = new ShipmentStub(
         to: new Address([
             'first_name' => 'Fulanito',
             'last_name' => 'Perez',
@@ -102,3 +102,11 @@ test('Rates', function () {
     expect($rate->duration->terms)->toBeString();
     expect($rate->amount)->toBeInstanceOf(Money::class);
 });
+
+test('Label', function () {
+    $carrier = $this->service->getCarriers()->first();
+    $services = $this->service->getServices();
+    $service = $services->where('carrier', $carrier->value)->first();
+    $rate = $this->service->getRate($carrier, $service);
+    $label = $this->service->createLabel($rate);
+})->only();

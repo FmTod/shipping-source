@@ -52,11 +52,11 @@ abstract class ShippingProvider implements ShippingService
      * Validate the config array and sets it as an object property.
      *
      * @param array $config
-     * @throws \InvalidArgumentException
+     * @return \FmTod\Shipping\Services\ShippingProvider
      * @version 04/19/2013
      * @since 04/19/2013
      */
-    public function setConfig(array $config = []): void
+    public function setConfig(array $config = []): static
     {
         // validate the config array
         if (! is_array($config) || empty($config)) {
@@ -64,18 +64,23 @@ abstract class ShippingProvider implements ShippingService
         }
         // set the object config array
         $this->config = $config;
+
+        return $this;
     }
 
     /**
      * Sets the IShipment object for which rates or labels will be generated.
      *
      * @param Shippable $shipment
+     * @return \FmTod\Shipping\Services\ShippingProvider
      * @version 07/07/2015
      * @since 04/19/2013
      */
-    public function setShipment(Shippable $shipment): void
+    public function setShippable(Shippable $shipment): static
     {
         $this->shipment = $shipment;
+
+        return $this;
     }
 
     /**
@@ -85,7 +90,7 @@ abstract class ShippingProvider implements ShippingService
      * @version updated 12/09/2012
      * @since 12/08/2012
      */
-    public function getShipment(): ?Shippable
+    public function getShippable(): ?Shippable
     {
         return $this->shipment;
     }

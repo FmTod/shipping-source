@@ -129,6 +129,39 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     protected MessageBag $errors;
 
     /**
+     * The attributes that have been cast using custom classes.
+     *
+     * @var array
+     */
+    protected array $classCastCache = [];
+
+    /**
+     * The built-in, primitive cast types supported by Eloquent.
+     *
+     * @var array
+     */
+    protected static array $primitiveCastTypes = [
+        'array',
+        'bool',
+        'boolean',
+        'collection',
+        'custom_datetime',
+        'date',
+        'datetime',
+        'decimal',
+        'double',
+        'float',
+        'int',
+        'integer',
+        'json',
+        'object',
+        'real',
+        'string',
+        'timestamp',
+    ];
+
+
+    /**
      * Create a new Eloquent model instance.
      *
      * @param array $attributes
@@ -698,7 +731,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     #[Pure]
     protected function getArrayableAttributes(): array
     {
-        return $this->getArrayableItems($this->attributes);
+        return $this->getArrayableItems($this->getAttributes());
     }
 
     /**
