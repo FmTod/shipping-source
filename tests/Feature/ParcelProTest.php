@@ -8,6 +8,7 @@ use FmTod\Shipping\Models\Package;
 use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
+use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use FmTod\Shipping\Services\ParcelPro;
 use Illuminate\Support\Collection;
@@ -108,5 +109,7 @@ test('Label', function () {
     $services = $this->service->getServices();
     $service = $services->where('carrier', $carrier->value)->first();
     $rate = $this->service->getRate($carrier, $service);
-    $label = $this->service->createLabel($rate);
-})->only();
+    $shipment = $this->service->createLabel($rate);
+
+    expect($shipment)->toBeInstanceOf(Shipment::class);
+})();
