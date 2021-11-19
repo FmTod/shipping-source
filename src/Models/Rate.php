@@ -34,8 +34,11 @@ class Rate
 
     public array $messages = [];
 
+    public array $parameters = [];
+
     /**
      * Rate constructor.
+     *
      * @param array $properties
      * @throws \Exception
      */
@@ -75,6 +78,10 @@ class Rate
             $this->messages = $properties['messages'];
         }
 
+        if (isset($properties['parameters'])) {
+            $this->parameters = $properties['parameters'];
+        }
+
         if (isset($properties['amount']) && is_array($properties['amount'])) {
             $this->amount = Money::parse($properties['amount']['value'], $properties['amount']['currency']);
         } elseif (isset($properties['amount']) && $properties['amount'] instanceof Money) {
@@ -93,6 +100,7 @@ class Rate
             'attributes' => $this->attributes,
             'messages' => $this->messages,
             'amount' => $this->amount->toArray(),
+            'data' => $this->data,
         ];
     }
 }

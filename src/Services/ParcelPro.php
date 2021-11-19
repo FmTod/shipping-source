@@ -132,7 +132,7 @@ class ParcelPro extends ShippingProvider
      *
      * @throws \Exception
      */
-    public function fetchServices(Carrier|string $carrier = null, bool $domestic = null): Collection
+    private function fetchServices(Carrier|string $carrier = null, bool $domestic = null): Collection
     {
         if ($carrier === null) {
             return collect($this->getCarriers())
@@ -166,21 +166,6 @@ class ParcelPro extends ShippingProvider
     }
 
     /**
-     * Get all the available services for the user.
-     *
-     * @return \Illuminate\Support\Collection
-     * @throws \Exception
-     */
-    public function getServices(): Collection
-    {
-        if (count($this->services) === 0) {
-            $this->services = $this->fetchServices();
-        }
-
-        return parent::getServices();
-    }
-
-    /**
      * Get transit time in number of days.
      *
      * @param array $rate
@@ -197,10 +182,11 @@ class ParcelPro extends ShippingProvider
      * Transform estimator array response to Rate object.
      *
      * @param array $rate
+     * @param array $parameters
      * @return \FmTod\Shipping\Models\Rate
      * @throws \Throwable
      */
-    private function parseRate(array $rate): Rate
+    private function parseRate(array $rate, array $parameters = []): Rate
     {
         $carrierValue = match (strtolower($rate['CarrierCode'])) {
             'fedex' => 'FedEx',
@@ -227,8 +213,8 @@ class ParcelPro extends ShippingProvider
                 'delivery_by' => $rate['DeliveryByTime'] ?? null,
             ]),
             'amount' => Money::parse($rate['TotalCharges'], 'USD'),
-            'attributes' => [],
-            'messages' => $rate['EstimatorDetail'],
+            'messages' => $rate['EstimatorDetail'] ?? [],
+            'parameters' => $parameters,
         ]);
     }
 
@@ -263,6 +249,21 @@ class ParcelPro extends ShippingProvider
             'ContactType' => ContactType::AddressBook,
             'IsResidential' => (! empty($address->is_residential) ? $address->is_residential : false),
         ]);
+    }
+
+    /**
+     * Get all the available services for the user.
+     *
+     * @return \Illuminate\Support\Collection
+     * @throws \Exception
+     */
+    public function getServices(): Collection
+    {
+        if (count($this->services) === 0) {
+            $this->services = $this->fetchServices();
+        }
+
+        return parent::getServices();
     }
 
     /**
@@ -318,7 +319,7 @@ class ParcelPro extends ShippingProvider
 
         throw_if(! $rate, 'There was an error retrieving the rates.');
 
-        return $this->parseRate($rate);
+        return $this->parseRate($rate, $parameters);
     }
 
     /**
@@ -363,14 +364,13 @@ class ParcelPro extends ShippingProvider
      *
      * @param Rate $rate
      * @return \FmTod\Shipping\Models\Shipment
-     * @throws Exception*@throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @version 07/07/2015
-     * @since 12/09/2012
+     * @throws \Throwable
      */
     public function createShipment(Rate $rate): Shipment
     {
-        $shipment = $this->request("shipments/$rate->id", [], 'POST')->json();
+        $quote = $this->getRate($rate->carrier, $rate->service, $rate->parameters);
+
+        $shipment = $this->request("shipments/$quote->id", [], 'POST')->json();
 
         if (ShipmentStatus::getKey($shipment['Status']) === 'Exception') {
             throw new Exception('There was an error creating the label.');
