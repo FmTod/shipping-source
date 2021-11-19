@@ -20,6 +20,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: Fix styling
+          branch: php-cs-fixer/patch
           delete-branch: true
-          title: PHP CS Fixer
+          commit-message: Linted php files with PHP-CS-Fixer
+          title: Fix styling
+          body: Fix coding style accordign to the rules set in the project.
+
