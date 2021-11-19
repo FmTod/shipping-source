@@ -160,7 +160,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         'timestamp',
     ];
 
-
     /**
      * Create a new Eloquent model instance.
      *

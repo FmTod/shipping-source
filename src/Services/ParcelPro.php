@@ -386,7 +386,7 @@ class ParcelPro extends ShippingProvider
             'labels' => collect([new Label([
                 'name' => $shipment['TrackingNumber'],
                 'content' => $shipment['LabelImageFull'],
-                'type' => LabelType::Base64
+                'type' => LabelType::Base64,
             ])]),
             'data' => $shipment,
         ]);

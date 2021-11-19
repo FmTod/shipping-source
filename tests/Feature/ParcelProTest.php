@@ -9,8 +9,8 @@ use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
-use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use FmTod\Shipping\Services\ParcelPro;
+use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
