@@ -26,15 +26,15 @@ abstract class ShippingProvider implements ShippingService
     /**
      * @var Shippable|null The Shipment object to process which contains Package object(s)
      */
-    protected Shippable|null $shipment = null;
+    protected Shippable|null $shippable = null;
 
     /**
      * Constructor function - sets object properties.
      *
      * @param array $config the configuration data
-     * @param Shippable|null $shipment
+     * @param Shippable|null $shippable
      */
-    public function __construct(array $config, Shippable $shipment = null)
+    public function __construct(array $config, Shippable $shippable = null)
     {
         $this->carriers = collect([]);
         $this->services = collect([]);
@@ -43,8 +43,8 @@ abstract class ShippingProvider implements ShippingService
         $this->setConfig($config);
 
         // set the local reference of the Shipment object
-        if ($shipment !== null) {
-            $this->setShipment($shipment);
+        if ($shippable !== null) {
+            $this->setShippable($shippable);
         }
     }
 
@@ -78,7 +78,7 @@ abstract class ShippingProvider implements ShippingService
      */
     public function setShippable(Shippable $shipment): static
     {
-        $this->shipment = $shipment;
+        $this->shippable = $shipment;
 
         return $this;
     }
@@ -92,7 +92,7 @@ abstract class ShippingProvider implements ShippingService
      */
     public function getShippable(): ?Shippable
     {
-        return $this->shipment;
+        return $this->shippable;
     }
 
     /**

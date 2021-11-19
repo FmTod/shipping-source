@@ -35,11 +35,11 @@ class ParcelPro extends ShippingProvider
      * Return a new instance of ParcelPro service.
      *
      * @param array $config
-     * @param \FmTod\Shipping\Contracts\Shippable|null $shipment
+     * @param \FmTod\Shipping\Contracts\Shippable|null $shippable
      */
-    public function __construct(array $config, Shippable $shipment = null)
+    public function __construct(array $config, Shippable $shippable = null)
     {
-        parent::__construct($config, $shipment);
+        parent::__construct($config, $shippable);
 
         $this->carriers = collect([
             new Carrier(['name' => 'UPS', 'value' => 'UPS']),

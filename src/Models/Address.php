@@ -322,7 +322,7 @@ class Address extends Model
         ],
         'email' => [
             'nullable',
-            'email:rfc,dns',
+            'email:rfc',
         ],
         'address1' => [
             'required',
