@@ -54,12 +54,12 @@ class Label extends Model implements Responsable
 
             return Response::make($fileContent, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="'.$fileName.'"'
+                'Content-Disposition' => 'inline; filename="'.$fileName.'"',
             ]);
         }
 
         if ($this->type === LabelType::File) {
-            return Response::stream(fn() => file_get_contents($this->content));
+            return Response::stream(fn () => file_get_contents($this->content));
         }
 
         return Response::redirectTo($this->content);

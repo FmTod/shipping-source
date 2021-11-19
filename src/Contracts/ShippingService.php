@@ -15,7 +15,7 @@ interface ShippingService
     public function getServices(): Collection;
 
     public function setShippable(Shippable $shipment): static;
-    
+
     public function getShippable(): ?Shippable;
 
     public function setConfig(array $config): static;
