@@ -9,14 +9,12 @@ use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
-use FmTod\Shipping\Services\ParcelPro;
+use FmTod\Shipping\Providers\ParcelPro;
 use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
 beforeEach(function () {
-    $this->locale = 'en_US';
-
     $shipment = new ShipmentStub(
         to: new Address([
             'first_name' => 'Fulanito',

@@ -10,13 +10,11 @@ use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Tests\stubs\ShipmentStub;
-use FmTod\Shipping\Services\Shippo;
+use FmTod\Shipping\Providers\Shippo;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
 beforeEach(function () {
-    $this->locale = 'en_US';
-
     $shipment = new ShipmentStub(
         to: new Address([
             'first_name' => 'Fulanito',
