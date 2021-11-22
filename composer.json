@@ -25,7 +25,7 @@
         "php": "^8.0",
         "bensampo/laravel-enum": "^4.1",
         "egulias/email-validator": "^2.1.10",
-        "fmtod/laravel-money": "^7.0",
+        "fmtod/laravel-money": "^7.0.14",
         "guzzlehttp/guzzle": "^7.0",
         "illuminate/contracts": "^8.37",
         "spatie/laravel-package-tools": "^1.9.2",
@@ -59,7 +59,7 @@
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest coverage",
+        "test-coverage": "vendor/bin/pest --coverage",
         "lint": "vendor/bin/php-cs-fixer fix"
     },
     "config": {

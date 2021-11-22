@@ -5,6 +5,7 @@ namespace FmTod\Shipping\Services;
 use FmTod\Shipping\Contracts\Shippable;
 use FmTod\Shipping\Contracts\ShippingService;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 abstract class ShippingProvider implements ShippingService
 {
@@ -52,15 +53,13 @@ abstract class ShippingProvider implements ShippingService
      * Validate the config array and sets it as an object property.
      *
      * @param array $config
-     * @return \FmTod\Shipping\Services\ShippingProvider
-     * @version 04/19/2013
-     * @since 04/19/2013
+     * @return static
      */
     public function setConfig(array $config = []): static
     {
         // validate the config array
         if (! is_array($config) || empty($config)) {
-            throw new \InvalidArgumentException('Config array is not valid or empty.');
+            throw new InvalidArgumentException('Config array is not valid or empty.');
         }
         // set the object config array
         $this->config = $config;
@@ -72,9 +71,7 @@ abstract class ShippingProvider implements ShippingService
      * Sets the IShipment object for which rates or labels will be generated.
      *
      * @param Shippable $shipment
-     * @return \FmTod\Shipping\Services\ShippingProvider
-     * @version 07/07/2015
-     * @since 04/19/2013
+     * @return static
      */
     public function setShippable(Shippable $shipment): static
     {
@@ -98,7 +95,7 @@ abstract class ShippingProvider implements ShippingService
     /**
      * Retrieves a list of available carriers.
      *
-     * @return \FmTod\Shipping\Models\Carrier[]
+     * @return \Illuminate\Support\Collection
      */
     public function getCarriers(): Collection
     {
@@ -108,7 +105,7 @@ abstract class ShippingProvider implements ShippingService
     /**
      * Retrieves a list of available services.
      *
-     * @return \FmTod\Shipping\Models\Service[]
+     * @return \Illuminate\Support\Collection
      */
     public function getServices(): Collection
     {

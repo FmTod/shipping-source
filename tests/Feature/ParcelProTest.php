@@ -112,4 +112,4 @@ test('Label', function () {
     $shipment = $this->service->createShipment($rate);
 
     expect($shipment)->toBeInstanceOf(Shipment::class);
-});
+})->skip();

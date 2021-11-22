@@ -7,7 +7,7 @@ namespace FmTod\Shipping\Models;
  * @property \FmTod\Shipping\Models\Carrier $carrier
  * @property \FmTod\Shipping\Models\Service $service
  * @property \FmTod\Shipping\Models\Duration $duration
- * @property \FmTod\Money\Money $amount
+ * @property \FmTod\Money\Money|null $amount
  * @property string $tracking_number
  * @property \Illuminate\Support\Collection $labels
  * @property mixed $data

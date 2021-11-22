@@ -425,10 +425,10 @@ class Address extends Model
     /**
      * Set full name attribute by splitting the provided string after the first space.
      *
-     * @param $value
+     * @param string $value
      * @return void
      */
-    public function setFullNameAttribute($value): void
+    public function setFullNameAttribute(string $value): void
     {
         $this->first_name = Str::before($value, ' ');
         $this->last_name = Str::after($value, ' ');
@@ -437,9 +437,9 @@ class Address extends Model
     /**
      * Set and format the provided country code as the two character code
      *
-     * @param $value
+     * @param string $value
      */
-    public function setCountryCodeAttribute($value): void
+    public function setCountryCodeAttribute(string $value): void
     {
         $this->attributes['country_code'] = self::formatCountryCode($value);
     }
