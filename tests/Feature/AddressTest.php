@@ -50,5 +50,3 @@ it('format country codes', function () {
     expect(Address::formatCountryCode('USA'))->toEqual('US');
     expect(Address::formatCountryCode('US', 3))->toEqual('USA');
 });
-
-

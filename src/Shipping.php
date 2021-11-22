@@ -47,7 +47,7 @@ class Shipping
     public function __construct(array $configs, Shippable $shipment)
     {
         $this->providers = collect($configs)
-            ->mapWithKeys(fn($config, $provider) => [$provider => self::provider($provider, $config, $shipment)]);
+            ->mapWithKeys(fn ($config, $provider) => [$provider => self::provider($provider, $config, $shipment)]);
     }
 
     /**
@@ -64,7 +64,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn(ShippingService $provider) => $provider->getCarriers())
+            ->map(fn (ShippingService $provider) => $provider->getCarriers())
             ->flatten(1);
     }
 
@@ -82,7 +82,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn(ShippingService $provider) => $provider->getServices())
+            ->map(fn (ShippingService $provider) => $provider->getServices())
             ->flatten(1);
     }
 
@@ -101,7 +101,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn(ShippingService $provider) => $provider->getRates($parameters))
+            ->map(fn (ShippingService $provider) => $provider->getRates($parameters))
             ->flatten(1);
     }
 
