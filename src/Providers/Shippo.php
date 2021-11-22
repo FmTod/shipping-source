@@ -35,7 +35,7 @@ class Shippo extends BaseProvider
     {
         parent::__construct(array_replace([
             'dimension_unit' => 'in',
-            'weight_unit' => 'lb'
+            'weight_unit' => 'lb',
         ], $config), $shipment);
         \Shippo::setApiKey($config['access_token']);
     }
@@ -62,7 +62,7 @@ class Shippo extends BaseProvider
                     default => $account['carrier'],
                 },
                 'value' => $account['object_id'],
-                'data' => $account->__toArray(true)
+                'data' => $account->__toArray(true),
             ]);
         });
     }
@@ -135,7 +135,7 @@ class Shippo extends BaseProvider
                         'fedex' => 'FedEx',
                         'usps' => 'USPS',
                         default => Str::title(Str::before($service, '_'))
-                    }
+                    },
                 ]);
             });
     }
@@ -276,11 +276,11 @@ class Shippo extends BaseProvider
 
         throw_if($response['status'] !== 'SUCCESS', 'There was an error retrieving the rates');
 
-        return collect($response['rates'])->map(fn($rate) => new Rate([
+        return collect($response['rates'])->map(fn ($rate) => new Rate([
             'id' => $rate->object_id,
             'provider' => new Provider([
                 'name' => self::NAME,
-                'class' => Shippo::class
+                'class' => Shippo::class,
             ]),
             'carrier' => new Carrier([
                 'name' => $rate['provider'],
@@ -292,7 +292,7 @@ class Shippo extends BaseProvider
             ]),
             'duration' => new Duration([
                 'days' => $rate['estimated_days'],
-                'terms' => $rate['servicelevel']['terms']
+                'terms' => $rate['servicelevel']['terms'],
             ]),
             'amount' => Money::parse($rate['amount'], $rate['currency']),
             'messages' => $rate['messages'],

@@ -7,9 +7,9 @@ use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Providers\ParcelPro;
+use FmTod\Shipping\Providers\Shippo;
 use FmTod\Shipping\Shipping;
 use FmTod\Shipping\Tests\stubs\ShipmentStub;
-use FmTod\Shipping\Providers\Shippo;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
@@ -49,7 +49,7 @@ beforeEach(function () {
         ],
         Shippo::NAME => [
             "access_token" => env('SHIPPO_TOKEN'),
-        ]
+        ],
     ], $shipment);
 });
 

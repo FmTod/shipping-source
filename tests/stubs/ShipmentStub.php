@@ -33,7 +33,7 @@ class ShipmentStub implements Shippable
      * @param array $packages Optional array of Package objects in this shipment;
      *                  if empty, packages must be added one at a time via #addPackage
      */
-    public function __construct(Address $to, Address $from , array $packages = [])
+    public function __construct(Address $to, Address $from, array $packages = [])
     {
         $this->shipping_address = $to;
         if ($from !== null && ! ($from instanceof Address)) {
