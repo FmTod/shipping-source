@@ -2,7 +2,6 @@
 
 namespace FmTod\Shipping;
 
-use FmTod\Shipping\Commands\ShippingCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,9 +16,6 @@ class ShippingServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('shipping')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_shipping_table')
-            ->hasCommand(ShippingCommand::class);
+            ->hasConfigFile();
     }
 }
