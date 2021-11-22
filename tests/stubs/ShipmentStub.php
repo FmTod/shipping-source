@@ -22,18 +22,18 @@ class ShipmentStub implements Shippable
 {
     protected Address $shipping_address;
 
-    protected ?Address $shipper_address;
+    protected Address $shipper_address;
 
     protected array $packages = [];
 
     /**
      * @param \FmTod\Shipping\Models\Address $to Address to which the shipment is being delivered
-     * @param \FmTod\Shipping\Models\Address|null $from Leave as null to use the default shipper's address as set in the config,
+     * @param \FmTod\Shipping\Models\Address $from Leave as null to use the default shipper's address as set in the config,
      *              or pass in a valid Address object to use a different address
      * @param array $packages Optional array of Package objects in this shipment;
      *                  if empty, packages must be added one at a time via #addPackage
      */
-    public function __construct(Address $to, Address $from = null, array $packages = [])
+    public function __construct(Address $to, Address $from , array $packages = [])
     {
         $this->shipping_address = $to;
         if ($from !== null && ! ($from instanceof Address)) {
@@ -49,7 +49,7 @@ class ShipmentStub implements Shippable
     }
 
     /**
-     * @return object Address for the destination address
+     * @return \FmTod\Shipping\Models\Address Address for the destination address
      */
     public function getShipToAddress(): Address
     {
@@ -57,9 +57,9 @@ class ShipmentStub implements Shippable
     }
 
     /**
-     * @return object Address for the address of origin or null if it was not specified
+     * @return \FmTod\Shipping\Models\Address Address for the address of origin or null if it was not specified
      */
-    public function getShipFromAddress(): ?Address
+    public function getShipFromAddress(): Address
     {
         return $this->shipper_address;
     }

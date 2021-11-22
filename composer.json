@@ -6,7 +6,7 @@
         "laravel",
         "shipping"
     ],
-    "homepage": "https://github.com/fmtod/shipping",
+    "homepage": "https://github.com/FmTod/shipping-source",
     "license": "MIT",
     "authors": [
         {
@@ -28,9 +28,11 @@
         "fmtod/laravel-money": "^7.0",
         "guzzlehttp/guzzle": "^7.0",
         "illuminate/contracts": "^8.37",
-        "spatie/laravel-package-tools": "^1.9.2"
+        "spatie/laravel-package-tools": "^1.9.2",
+        "shippo/shippo-php": "^1.4.4"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
         "lukeraymonddowning/pest-plugin-money": "^1.1",
         "nunomaduro/collision": "^5.10",
         "nunomaduro/larastan": "^1.0",
@@ -46,8 +48,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FmTod\\Shipping\\": "src",
-            "FmTod\\Shipping\\Database\\Factories\\": "database/factories"
+            "FmTod\\Shipping\\": "src"
         }
     },
     "autoload-dev": {

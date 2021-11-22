@@ -196,7 +196,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Set validation rules.
      *
      * @param array $rules
-     * @return \FmTod\Shipping\Models\Model
+     * @return static
      */
     public function setRules(array $rules): static
     {
@@ -210,7 +210,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @param string $attribute
      * @param string|array $rule
-     * @return \FmTod\Shipping\Models\Model
+     * @return static
      */
     public function setRule(string $attribute, string|array $rule): static
     {
@@ -223,7 +223,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Remove validation set rule for the specified attribute
      *
      * @param string $attribute
-     * @return \FmTod\Shipping\Models\Model
+     * @return static
      */
     public function removeRule(string $attribute): static
     {
@@ -285,9 +285,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Set error message bag.
      *
-     * @var \Illuminate\Support\MessageBag
+     * @param \Illuminate\Support\MessageBag $errors
+     * @return void
      */
-    protected function setErrors($errors): void
+    protected function setErrors(MessageBag $errors): void
     {
         $this->errors = $errors;
     }
@@ -775,8 +776,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public function getAttribute(string $key): mixed
     {
         if (! array_key_exists($key, $this->attributes) &&
-            ! array_key_exists($key, $this->fillable) &&
             ! array_key_exists($key, $this->casts) &&
+            ! in_array($key, $this->fillable, true) &&
             ! $this->hasGetMutator($key)) {
             throw new \RuntimeException("Specified attribute [$key] is not valid.");
         }

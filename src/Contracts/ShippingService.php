@@ -20,7 +20,7 @@ interface ShippingService
 
     public function setConfig(array $config): static;
 
-    public function getRates(array $options = []): Collection;
+    public function getRates(array $parameters = []): Collection;
 
     public function getRate(Carrier|string $carrier, Service|string $service, array $parameters = []): Rate;
 

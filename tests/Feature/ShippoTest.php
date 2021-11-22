@@ -9,8 +9,8 @@ use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
-use FmTod\Shipping\Services\ParcelPro;
 use FmTod\Shipping\Tests\stubs\ShipmentStub;
+use \FmTod\Shipping\Services\Shippo;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
@@ -45,14 +45,11 @@ beforeEach(function () {
         packages: [new Package(10, [13, 10, 3])]
     );
 
-    $this->service = new ParcelPro([
-        "client_key" => "645157API",
-        "client_secret" => "Credentials645157",
-    ], $shipment);
+    $this->service = new Shippo(["access_token" => "shippo_test_ce61350569bc70477df96c7c43da1bcf911decc8"], $shipment);
 });
 
 test('Constructor', function () {
-    expect($this->service)->toBeInstanceOf(ParcelPro::class);
+    expect($this->service)->toBeInstanceOf(Shippo::class);
 });
 
 test('Carriers', function () {
@@ -85,13 +82,13 @@ test('Estimator', function () {
 });
 
 test('Rates', function () {
-    $carrier = $this->service->getCarriers()->first();
+    $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     expect($carrier)->toBeInstanceOf(Carrier::class);
 
     $services = $this->service->getServices();
     expect($services)->toBeInstanceOf(Collection::class);
 
-    $service = $services->where('carrier', $carrier->value)->first();
+    $service = $services->where('carrier', $carrier->name)->first();
     expect($service)->toBeInstanceOf(Service::class);
 
     $rate = $this->service->getRate($carrier, $service);
@@ -105,9 +102,9 @@ test('Rates', function () {
 });
 
 test('Label', function () {
-    $carrier = $this->service->getCarriers()->first();
+    $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     $services = $this->service->getServices();
-    $service = $services->where('carrier', $carrier->value)->first();
+    $service = $services->where('carrier', $carrier->name)->first();
     $rate = $this->service->getRate($carrier, $service);
     $shipment = $this->service->createShipment($rate);
 

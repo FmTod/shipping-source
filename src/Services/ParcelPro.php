@@ -53,7 +53,7 @@ class ParcelPro extends ShippingProvider
      * @return array
      * @throws \Exception
      */
-    #[ArrayShape(['access_token' => 'array|mixed', 'expires_at' => Carbon::class])]
+    #[ArrayShape(['access_token' => "array|mixed", 'expires_at' => Carbon::class])]
     private function refreshToken(): array
     {
         $response = Http::post('https://api.parcelpro.com/v2.0/auth', [
@@ -63,7 +63,7 @@ class ParcelPro extends ShippingProvider
         ]);
 
         if ($response->failed()) {
-            throw new \Exception($response->json('Message'), $response->json('Code'));
+            throw new Exception($response->json('Message'), $response->json('Code'));
         }
 
         $token = [
@@ -110,7 +110,7 @@ class ParcelPro extends ShippingProvider
         $allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
         $method = strtolower($method);
         if (! in_array($method, $allowedMethods)) {
-            throw new \Exception("The method [$method] is not allowed.");
+            throw new Exception("The method [$method] is not allowed.");
         }
 
         $token = $this->getToken();
@@ -119,7 +119,7 @@ class ParcelPro extends ShippingProvider
             ->withToken($token['access_token'])
             ->$method($endpoint, $data)
             ->onError(function (Response $response) {
-                throw new \Exception('API Error: '.$response->json('Message'), $response->json('Code'));
+                throw new Exception('API Error: '.$response->json('Message'), $response->json('Code'));
             });
     }
 
@@ -204,7 +204,7 @@ class ParcelPro extends ShippingProvider
             'id' => $rate['QuoteID'],
             'provider' => new Provider([
                 'name' => 'ParcelPro',
-                'class' => self::class,
+                'class' => __CLASS__,
             ]),
             'carrier' => $carrier,
             'service' => $service,
@@ -298,6 +298,7 @@ class ParcelPro extends ShippingProvider
             'CarrierCode' => match (strtolower($carrier)) {
                 'ups' => 1,
                 'fedex' => 2,
+                default => $carrier
             },
             'ServiceCode' => $service,
             'ShipFrom' => $this->buildContact($shipFrom),
@@ -326,12 +327,12 @@ class ParcelPro extends ShippingProvider
      * Compiles the required information for obtaining a shipping rate quote into the array and using sendRequest()
      *      sends the request to the UPS API and returns a RateResponse object.
      *
-     * @param array $options
+     * @param array $parameters
      * @return Collection
      *
      * @throws \Throwable
      */
-    public function getRates(array $options = []): Collection
+    public function getRates(array $parameters = []): Collection
     {
         $shipment = $this->getShippable();
 
@@ -348,9 +349,9 @@ class ParcelPro extends ShippingProvider
             'Width' => ceil($packages[0]->get('width')),
             'Height' => ceil($packages[0]->get('height')),
             'Weight' => ceil($packages[0]->get('weight')),
-            'InsuredValue' => $options['insurance'] ?? 1,
-            'IsDeliveryConfirmation' => $options['adult_signature'] ?? false,
-            'IsSaturdayDelivery' => $options['saturday_delivery'] ?? false,
+            'InsuredValue' => $parameters['insurance'] ?? 1,
+            'IsDeliveryConfirmation' => $parameters['adult_signature'] ?? false,
+            'IsSaturdayDelivery' => $parameters['saturday_delivery'] ?? false,
         ]);
 
         return $this->request('estimator', $request->toArray(), 'POST')
