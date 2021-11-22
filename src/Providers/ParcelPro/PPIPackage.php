@@ -1,8 +1,8 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro;
+namespace FmTod\Shipping\Providers\ParcelPro;
 
-use FmTod\Shipping\Services\ParcelPro\Enums\Carriers;
+use FmTod\Shipping\Providers\ParcelPro\Enums\Carriers;
 
 class PPIPackage
 {

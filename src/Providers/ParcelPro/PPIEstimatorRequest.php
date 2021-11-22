@@ -1,12 +1,12 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro;
+namespace FmTod\Shipping\Providers\ParcelPro;
 
 /**
  * Class PPIEstimatorRequest
  *
- * @property \FmTod\Shipping\Services\ParcelPro\PPIContact $ShipTo
- * @property \FmTod\Shipping\Services\ParcelPro\PPIContact $ShipFrom
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact $ShipTo
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact $ShipFrom
  * @property bool $ShipToResidential
  * @property int $Weight
  * @property int $Height

@@ -1,31 +1,39 @@
 <?php
 
-namespace FmTod\Shipping\Services;
+namespace FmTod\Shipping\Providers;
 
 use FmTod\Shipping\Contracts\Shippable;
 use FmTod\Shipping\Contracts\ShippingService;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
-abstract class ShippingProvider implements ShippingService
+abstract class BaseProvider implements ShippingService
 {
     /**
-     * @var array holder for config data (from includes/config.php)
+     * Provider config
+     *
+     * @var array
      */
     protected array $config = [];
 
     /**
-     * @var Collection List of available carriers
+     * List of available carriers.
+     *
+     * @var Collection
      */
     protected Collection $carriers;
 
     /**
-     * @var Collection List of available services
+     * List of available services.
+     *
+     * @var Collection
      */
     protected Collection $services;
 
     /**
-     * @var Shippable|null The Shipment object to process which contains Package object(s)
+     * The Shipment object to process which contains Package object(s).
+     *
+     * @var Shippable|null
      */
     protected Shippable|null $shippable = null;
 

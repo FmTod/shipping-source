@@ -1,6 +1,6 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro\Enums;
+namespace FmTod\Shipping\Providers\ParcelPro\Enums;
 
 use BenSampo\Enum\Enum;
 

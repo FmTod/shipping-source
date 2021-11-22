@@ -1,8 +1,8 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro;
+namespace FmTod\Shipping\Providers\ParcelPro;
 
-use FmTod\Shipping\Services\ParcelPro\Enums\ContactType;
+use FmTod\Shipping\Providers\ParcelPro\Enums\ContactType;
 
 class PPIContact extends PPIObject
 {

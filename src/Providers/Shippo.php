@@ -1,6 +1,6 @@
 <?php
 
-namespace FmTod\Shipping\Services;
+namespace FmTod\Shipping\Providers;
 
 use FmTod\Money\Money;
 use FmTod\Shipping\Contracts\Shippable;
@@ -20,8 +20,10 @@ use Shippo_Object;
 use Shippo_Shipment;
 use Shippo_Transaction;
 
-class Shippo extends ShippingProvider
+class Shippo extends BaseProvider
 {
+    public const NAME = 'Shippo';
+
     /**
      * Constructor function - sets object properties.
      *
@@ -277,7 +279,7 @@ class Shippo extends ShippingProvider
         return collect($response['rates'])->map(fn($rate) => new Rate([
             'id' => $rate->object_id,
             'provider' => new Provider([
-                'name' => 'Shippo',
+                'name' => self::NAME,
                 'class' => Shippo::class
             ]),
             'carrier' => new Carrier([

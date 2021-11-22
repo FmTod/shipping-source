@@ -1,12 +1,12 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro;
+namespace FmTod\Shipping\Providers\ParcelPro;
 
 /**
  * Class PPIQuote.
  *
- * @property \FmTod\Shipping\Services\ParcelPro\PPIContact|null ShipTo
- * @property \FmTod\Shipping\Services\ParcelPro\PPIContact|null ShipFrom
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null ShipTo
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null ShipFrom
  * @property string ShipDate
  * @property int Length
  * @property int Width

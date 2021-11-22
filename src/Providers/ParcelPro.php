@@ -1,6 +1,6 @@
 <?php
 
-namespace FmTod\Shipping\Services;
+namespace FmTod\Shipping\Providers;
 
 use Exception;
 use FmTod\Money\Money;
@@ -14,11 +14,11 @@ use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
-use FmTod\Shipping\Services\ParcelPro\Enums\ContactType;
-use FmTod\Shipping\Services\ParcelPro\Enums\ShipmentStatus;
-use FmTod\Shipping\Services\ParcelPro\PPIContact;
-use FmTod\Shipping\Services\ParcelPro\PPIEstimatorRequest;
-use FmTod\Shipping\Services\ParcelPro\PPIQuote;
+use FmTod\Shipping\Providers\ParcelPro\Enums\ContactType;
+use FmTod\Shipping\Providers\ParcelPro\Enums\ShipmentStatus;
+use FmTod\Shipping\Providers\ParcelPro\PPIContact;
+use FmTod\Shipping\Providers\ParcelPro\PPIEstimatorRequest;
+use FmTod\Shipping\Providers\ParcelPro\PPIQuote;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -27,8 +27,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use JetBrains\PhpStorm\ArrayShape;
 
-class ParcelPro extends ShippingProvider
+class ParcelPro extends BaseProvider
 {
+    public const NAME = 'ParcelPro';
+
     protected string $apiUrl = 'https://api.parcelpro.com/v2.0/';
 
     /**
@@ -203,7 +205,7 @@ class ParcelPro extends ShippingProvider
         return new Rate([
             'id' => $rate['QuoteID'],
             'provider' => new Provider([
-                'name' => 'ParcelPro',
+                'name' => self::NAME,
                 'class' => __CLASS__,
             ]),
             'carrier' => $carrier,

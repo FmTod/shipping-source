@@ -1,6 +1,6 @@
 <?php
 
-namespace FmTod\Shipping\Services\ParcelPro;
+namespace FmTod\Shipping\Providers\ParcelPro;
 
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
