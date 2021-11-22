@@ -280,14 +280,6 @@ class ParcelPro extends BaseProvider
      */
     public function getRate(Carrier|string $carrier, Service|string $service, array $parameters = []): Rate
     {
-        $shipment = $this->getShippable();
-
-        throw_if(! $shipment, 'No shipment was provided.');
-
-        $shipFrom = $shipment->getShipFromAddress();
-        $shipTo = $shipment->getShipToAddress();
-        $packages = $shipment->getPackages();
-
         if ($carrier instanceof Carrier) {
             $carrier = $carrier->value;
         }
@@ -295,6 +287,12 @@ class ParcelPro extends BaseProvider
         if ($service instanceof Service) {
             $service = $service->value;
         }
+
+        throw_if(! $this->getShippable(), 'No shipment was provided.');
+
+        $shipFrom = $this->getShippable()->getShipFromAddress();
+        $shipTo = $this->getShippable()->getShipToAddress();
+        $packages = $this->getShippable()->getPackages();
 
         $quote = new PPIQuote([
             'CarrierCode' => match (strtolower($carrier)) {
@@ -314,6 +312,13 @@ class ParcelPro extends BaseProvider
             'IsSaturdayDelivery' => $parameters['saturday_delivery'] ?? false,
             'ReferenceNumber' => $parameters['reference'] ?? '',
             'CustomerReferenceNumber' => $parameters['reference'] ?? '',
+
+            // International Shipment
+            'IsInternational' => $shipTo->country_code !== 'US',
+            'IsCommercialInvoice' => $shipTo->country_code !== 'US',
+            'ShipmentPurpose' => $parameters['purpose'] ?? '',
+            'PackageContent' => $parameters['content'] ?? '',
+            'Commodities' => $parameters['commodities'] ?? [],
         ]);
 
         $rate = $this->request('quotes', $quote->toArray(), 'POST')

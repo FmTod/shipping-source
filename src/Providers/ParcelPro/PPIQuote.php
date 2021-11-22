@@ -5,20 +5,20 @@ namespace FmTod\Shipping\Providers\ParcelPro;
 /**
  * Class PPIQuote.
  *
- * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null ShipTo
- * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null ShipFrom
- * @property string ShipDate
- * @property int Length
- * @property int Width
- * @property int Height
- * @property int Weight
- * @property int InsuredValue
- * @property string ServiceCode
- * @property string CarrierCode
- * @property bool IsDeliveryConfirmation
- * @property bool IsSaturdayDelivery
- * @property bool ReferenceNumber
- * @property bool CustomerReferenceNumber
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null $ShipTo
+ * @property \FmTod\Shipping\Providers\ParcelPro\PPIContact|null $ShipFrom
+ * @property string $ShipDate
+ * @property int $Length
+ * @property int $Width
+ * @property int $Height
+ * @property int $Weight
+ * @property int $InsuredValue
+ * @property string $ServiceCode
+ * @property string $CarrierCode
+ * @property bool $IsDeliveryConfirmation
+ * @property bool $IsSaturdayDelivery
+ * @property bool $ReferenceNumber
+ * @property bool $CustomerReferenceNumber
  */
 class PPIQuote extends PPIObject
 {
@@ -39,6 +39,10 @@ class PPIQuote extends PPIObject
         'Width' => 0,
         'Length' => 0,
         'InsuredValue' => 1,
+        'IsInternational' => false,
+        'ShipmentPurpose' => '',
+        'PackageContent' => '',
+        'Commodities' => [],
 
         //<editor-fold desc="Misc" defaultstate="collapsed">
         'UserId' => 0,

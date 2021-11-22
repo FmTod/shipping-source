@@ -29,6 +29,10 @@ class PPIEstimatorRequest extends PPIObject
         'InsuredValue' => 1,
         'IsSaturdayDelivery' => false,
         'IsDeliveryConfirmation' => false,
+        'IsInternational' => false,
+        'ShipmentPurpose' => '',
+        'PackageContent' => '',
+        'Commodities' => [],
 
         'UserId' => 0,
         'IsSaturdayPickUp' => false,
