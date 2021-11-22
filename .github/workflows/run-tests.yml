@@ -47,3 +47,7 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest
+        env:
+          PARCELPRO_KEY: ${{ secrets.PARCELPRO_KEY }}
+          PARCELPRO_SECRET: ${{ secrets.PARCELPRO_SECRET }}
+          SHIPPO_TOKEN: ${{ secrets.SHIPPO_TOKEN }}

@@ -44,11 +44,11 @@ beforeEach(function () {
 
     $this->service = new Shipping([
         ParcelPro::NAME => [
-            "client_key" => "645157API",
-            "client_secret" => "Credentials645157",
+            "client_key" => env('PARCELPRO_KEY'),
+            "client_secret" => env('PARCELPRO_SECRET'),
         ],
         Shippo::NAME => [
-            "access_token" => "shippo_test_ce61350569bc70477df96c7c43da1bcf911decc8"
+            "access_token" => env('SHIPPO_TOKEN'),
         ]
     ], $shipment);
 });

@@ -43,7 +43,7 @@ beforeEach(function () {
         packages: [new Package(10, [13, 10, 3])]
     );
 
-    $this->service = new Shippo(["access_token" => "shippo_test_ce61350569bc70477df96c7c43da1bcf911decc8"], $shipment);
+    $this->service = new Shippo(["access_token" => env('SHIPPO_TOKEN')], $shipment);
 });
 
 test('Constructor', function () {

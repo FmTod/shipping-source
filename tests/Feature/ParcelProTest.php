@@ -44,8 +44,8 @@ beforeEach(function () {
     );
 
     $this->service = new ParcelPro([
-        "client_key" => "645157API",
-        "client_secret" => "Credentials645157",
+        "client_key" => env('PARCELPRO_KEY'),
+        "client_secret" => env('PARCELPRO_SECRET'),
     ], $shipment);
 });
 
