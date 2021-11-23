@@ -14,7 +14,7 @@ use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
-beforeEach(function () {
+beforeAll(function () {
     $shipment = new ShipmentStub(
         to: new Address([
             'first_name' => 'Fulanito',
@@ -48,21 +48,21 @@ beforeEach(function () {
 
 test('Constructor', function () {
     expect($this->service)->toBeInstanceOf(Shippo::class);
-});
+})->skip();
 
 test('Carriers', function () {
     $carriers = $this->service->getCarriers();
 
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Carrier::class);
-});
+})->skip();
 
 test('Services', function () {
     $services = $this->service->getServices();
 
     expect($services)->toBeInstanceOf(Collection::class);
     expect($services->first())->toBeInstanceOf(Service::class);
-});
+})->skip();
 
 test('Estimator', function () {
     $rates = $this->service->getRates();
@@ -77,7 +77,7 @@ test('Estimator', function () {
     expect($rate->duration->days)->toBeInt();
     expect($rate->duration->terms)->toBeString();
     expect($rate->amount)->toBeInstanceOf(Money::class);
-});
+})->skip();
 
 test('Rates', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
@@ -97,7 +97,7 @@ test('Rates', function () {
     expect($rate->duration->days)->toBeInt();
     expect($rate->duration->terms)->toBeString();
     expect($rate->amount)->toBeInstanceOf(Money::class);
-});
+})->skip();
 
 test('Label', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
@@ -107,4 +107,4 @@ test('Label', function () {
     $shipment = $this->service->createShipment($rate);
 
     expect($shipment)->toBeInstanceOf(Shipment::class);
-});
+})->skip();

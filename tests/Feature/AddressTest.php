@@ -4,7 +4,7 @@ use FmTod\Shipping\Models\Address;
 use Illuminate\Support\Str;
 use function Pest\Faker\faker;
 
-beforeEach(function () {
+beforeAll(function () {
     $this->address = new Address([
         'first_name' => faker()->firstName,
         'last_name' => faker()->lastName,
