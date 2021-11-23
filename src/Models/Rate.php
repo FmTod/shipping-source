@@ -19,7 +19,6 @@ use FmTod\Money\Money;
  */
 class Rate extends Model
 {
-
     protected array $fillable = [
         'id',
         'provider',

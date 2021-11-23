@@ -163,8 +163,8 @@ test('International Rate', function () {
                 'SaveInDB' => 'N',
                 'CommodityLongDescription' => 'f',
                 'AESCommodityDescription' => 'FASHION ACCESSORIES',
-            ]
-        ]
+            ],
+        ],
     ]);
     expect($rate->provider)->toBeInstanceOf(Provider::class);
     expect($rate->carrier)->toBeInstanceOf(Carrier::class);
