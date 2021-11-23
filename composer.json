@@ -32,7 +32,7 @@
         "shippo/shippo-php": "^1.4.4"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
+        "jetbrains/phpstorm-attributes": "^1.0",
         "lukeraymonddowning/pest-plugin-money": "^1.1",
         "nunomaduro/collision": "^5.10",
         "nunomaduro/larastan": "^1.0",
@@ -44,6 +44,7 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.4",
+        "roave/security-advisories": "dev-latest",
         "spatie/laravel-ray": "^1.26"
     },
     "autoload": {

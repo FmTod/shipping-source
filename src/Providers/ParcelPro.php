@@ -321,7 +321,8 @@ class ParcelPro extends BaseProvider
             'Commodities' => $parameters['commodities'] ?? [],
         ]);
 
-        $rate = $this->request('quotes', $quote->toArray(), 'POST')
+        //$rate = $this->request('quotes', $quote->toArray(), 'POST')
+        $rate = $this->request('quotes', $parameters, 'POST')
             ->collect('Estimator')
             ->first();
 

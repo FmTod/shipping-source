@@ -43,6 +43,9 @@ class PPIQuote extends PPIObject
         'ShipmentPurpose' => '',
         'PackageContent' => '',
         'Commodities' => [],
+        'BillDutiesTo' => '',
+        'CODAmount' => 0,
+        'ReturnLabelScheduleDate' => '',
 
         //<editor-fold desc="Misc" defaultstate="collapsed">
         'UserId' => 0,
@@ -88,7 +91,7 @@ class PPIQuote extends PPIObject
         'IsHighValueReport' => false,
         'ReceivedBy' => '',
         'ReceivedTime' => '',
-        'TotalShipments' => '0',
+        'TotalShipments' => '1',
         //</editor-fold>
     ];
 

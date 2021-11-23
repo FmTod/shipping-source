@@ -13,6 +13,7 @@
 
 namespace FmTod\Shipping\Models;
 
+use JetBrains\PhpStorm\Pure;
 use UnexpectedValueException;
 
 class Package
@@ -90,12 +91,12 @@ class Package
     /**
      * Rounds a float UP to the next tenth (always rounds up) ie: 2.32 becomes 2.4, 3.58 becomes 3.6.
      *
-     * @version updated 12/09/2012
-     * @since 12/09/2012
      * @param float $float the float to be rounded
      * @return float the rounded float
+     *@version updated 12/09/2012
+     * @since 12/09/2012
      */
-    protected function roundUpToTenth($float)
+    protected function roundUpToTenth(float $float): float|int
     {
         // round each value UP to the next tenth
         return ceil($float * 10) / 10;
@@ -109,7 +110,7 @@ class Package
      * @return bool of package validity
      * @throws UnexpectedValueException if the weight or a dimension is invalid
      */
-    protected function isPackageValid()
+    protected function isPackageValid(): bool
     {
         // create an array of the values to validate
         $values = ['weight', 'length', 'width', 'height'];
@@ -146,28 +147,29 @@ class Package
      * @since 12/04/2012
      * @return int the size (length plus girth of the package) and rounded
      */
-    protected function calculatePackageSize()
+    #[Pure]
+    protected function calculatePackageSize(): int
     {
-        return round($this->length + $this->calculatePackageGirth());
+        return (int) round($this->length + $this->calculatePackageGirth());
     }
 
     /**
      * Calculates the package's girth (the distance around the two smaller sides of the package or width + width
      *      + height + height.
      *
-     * @param int|float $width the width of the package (if null, the object property $this->width will be used)
-     * @param int|float $height the height of the package (if null, the object property $this->height will be used)
-     * @version updated 01/14/2013
-     * @since 12/04/2012
+     * @param float|int|null $width the width of the package (if null, the object property $this->width will be used)
+     * @param float|int|null $height the height of the package (if null, the object property $this->height will be used)
      * @return int the girth of the package
+     *@since 12/04/2012
+     * @version updated 01/14/2013
      */
-    public function calculatePackageGirth($width = null, $height = null)
+    public function calculatePackageGirth(float|int $width = null, float|int $height = null): float|int
     {
         // if values are null, fill them with the object properties
-        if ($width == null) {
+        if ($width === null) {
             $width = $this->width;
         }
-        if ($height == null) {
+        if ($height === null) {
             $height = $this->height;
         }
         // calculate and return the girth
@@ -178,21 +180,21 @@ class Package
      * Calculates the package's total volume to the nearest whole measurement unit.
      * @return int the volume of the package
      */
-    public function calculatePackageVolume()
+    public function calculatePackageVolume(): int
     {
-        return round($this->length * $this->width * $this->height);
+        return (int) round($this->length * $this->width * $this->height);
     }
 
     /**
      * Returns the specified property of the object or throwns an exception if that property is not set.
      *
-     * @version updated 12/08/2012
-     * @since 12/08/2012
      * @param string $property the desired object property
      * @return mixed the value found for the desired object property
      * @throws UnexpectedValueException if the property is not set
+     *@since 12/08/2012
+     * @version updated 12/08/2012
      */
-    public function get($property)
+    public function get(string $property): mixed
     {
         if (! isset($this->{$property})) {
             throw new UnexpectedValueException('There is no data in the requested property ('.$property.').');
@@ -204,14 +206,14 @@ class Package
     /**
      * Returns the specified option value of the object's options array.
      *
-     * @version updated 01/01/2013
-     * @since 01/01/2013
      * @param string $key the desired key of the options array
      * @return mixed the value found for the desired array key
+     *@version updated 01/01/2013
+     * @since 01/01/2013
      */
-    public function getOption($key)
+    public function getOption(string $key): mixed
     {
-        return isset($this->options[$key]) ? $this->options[$key] : null;
+        return $this->options[$key] ?? null;
     }
 
     /**
@@ -224,12 +226,10 @@ class Package
      * default               : Current value if set, otherwise the merged package's value.
      *
      * @param Package $package The package being merged with the current Package instance
-     * @param string  $error   Message describing why the merge failed, if applicable
-     * @return false if options were unable to merge
-     * @version 06/14/2016
-     * @since 09/25/2015
+     * @param string $error   Message describing why the merge failed, if applicable
+     * @return bool false if options were unable to merge
      */
-    public function mergeOptions(self $package, &$error)
+    public function mergeOptions(self $package, string &$error): bool
     {
         if (empty($this->options)) {
             $this->options = $package->options;
@@ -240,14 +240,14 @@ class Package
             switch ($key) {
             case 'description': // Descriptions concatenate unless the string is already present
                 $description = (empty($this->options[$key]) ? '' : $this->options[$key]);
-                $description .= (empty($value) || strpos($description, $value) >= 0 ? '' : '. '.$value);
+                $description .= (empty($value) || str_contains($description, $value) ? '' : '. '.$value);
                 if (! empty($description)) {
                     $this->options[$key] = $description;
                 }
 
                 break;
             case 'insured_amount': // Amounts are added together if present
-                $value += (empty($this->options[$key]) ? 0 : $this->options[$key]);
+                $value += (float) (empty($this->options[$key]) ? 0 : $this->options[$key]);
                 if ($value > 0) {
                     $this->options[$key] = $value;
                 }

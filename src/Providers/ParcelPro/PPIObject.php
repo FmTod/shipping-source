@@ -29,12 +29,12 @@ abstract class PPIObject implements Serializable, Arrayable, ArrayAccess, Jsonab
     /**
      * Get specified property.
      *
-     * @param $name
+     * @param string $name
      * @return mixed
      *
      * @throws \Throwable
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         throw_if(! array_key_exists($name, $this->data), "Property [$name] does not exists.");
 
@@ -44,12 +44,12 @@ abstract class PPIObject implements Serializable, Arrayable, ArrayAccess, Jsonab
     /**
      * Set specified property.
      *
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      *
      * @throws \Throwable
      */
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
         throw_if(! array_key_exists($name, $this->data), "Property [$name] does not exists.");
 
@@ -59,10 +59,10 @@ abstract class PPIObject implements Serializable, Arrayable, ArrayAccess, Jsonab
     /**
      * Determine if property is set.
      *
-     * @param $name
+     * @param string $name
      * @return bool
      */
-    public function __isset($name): bool
+    public function __isset(string $name): bool
     {
         return array_key_exists($name, $this->data);
     }

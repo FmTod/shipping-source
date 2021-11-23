@@ -49,10 +49,12 @@ class Shippo extends BaseProvider
     {
         $response = Shippo_CarrierAccount::all();
 
-        if (! isset($response['results'])) {
+        /* @phpstan-ignore-next-line */
+        if (empty($response['results'])) {
             return collect();
         }
 
+        /* @phpstan-ignore-next-line */
         return collect($response['results'])->map(function (Shippo_Object $account) {
             return new Carrier([
                 'name' => match (true) {

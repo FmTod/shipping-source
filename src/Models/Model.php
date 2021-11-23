@@ -17,9 +17,9 @@ use Illuminate\Support\Str;
 use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory as ValidatorFactory;
-use Illuminate\Validation\Validator;
 use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
+use RuntimeException;
 
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -164,7 +164,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Create a new Eloquent model instance.
      *
      * @param array $attributes
-     * @param \Illuminate\Support\Facades\Validator|null $validator
+     * @param \Illuminate\Validation\Factory|null $validator
      */
     public function __construct(array $attributes = [], ValidatorFactory $validator = null)
     {
@@ -235,10 +235,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Get validation rules.
      *
-     * @param array $rules
      * @return array
      */
-    public function getRules(array $rules): array
+    public function getRules(): array
     {
         return $this->rules;
     }
@@ -256,10 +255,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Get validation rules.
      *
-     * @param array $messages
      * @return array
      */
-    public function getMessages(array $messages): array
+    public function getMessages(): array
     {
         return $this->messages;
     }
@@ -376,11 +374,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Create a new instance of the given model.
      *
      * @param array $attributes
+     * @param \Illuminate\Validation\Factory|null $validator
      * @return static
      */
-    public function newInstance(array $attributes = []): static
+    public function newInstance(array $attributes = [],  ValidatorFactory $validator = null): static
     {
-        return new static($attributes);
+        /* @phpstan-ignore-next-line */
+        return new static($attributes, $validator);
     }
 
     /**
@@ -391,6 +391,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public static function hydrate(array $items): array
     {
+        /* @phpstan-ignore-next-line */
         $instance = new static();
 
         return array_map(static function ($item) use ($instance) {
@@ -779,7 +780,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             ! array_key_exists($key, $this->casts) &&
             ! in_array($key, $this->fillable, true) &&
             ! $this->hasGetMutator($key)) {
-            throw new \RuntimeException("Specified attribute [$key] is not valid.");
+            throw new RuntimeException("Specified attribute [$key] is not valid.");
         }
 
         return $this->getAttributeValue($key);
@@ -1005,6 +1006,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         $attributes = Arr::except($this->attributes, $except);
 
+        /* @phpstan-ignore-next-line */
         return with(new static())->fill($attributes);
     }
 
@@ -1160,6 +1162,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public static function __callStatic(string $method, array $parameters)
     {
+        /* @phpstan-ignore-next-line */
         $instance = new static();
 
         return call_user_func_array([$instance, $method], $parameters);
