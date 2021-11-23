@@ -15,7 +15,7 @@ use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
-beforeAll(function () {
+beforeEach(function () {
     $shipment = new ShipmentStub(
         to: new Address([
             'first_name' => 'Fulanito',
