@@ -2,6 +2,10 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.6.9 - 2021-11-24
+
+Revert change where carrier name was appended to the beginning of the service name
+
 ## 0.6.8 - 2021-11-24
 
 Small bug fix for cases where shippo is being initialized statically.
