@@ -175,16 +175,12 @@ final class ParcelPro extends BaseProvider
                 'CarrierCode' => $carrier,
             ])
             ->collect()
-            ->map(function (array $service) {
-                $carrier = $this->normalizeCarrierName($service['CarrierCode']);
-
-                return new Service([
-                    'carrier' => $carrier,
-                    'name' => $carrier . ' ' . $service['ServiceCodeDesc'],
-                    'value' => $service['ServiceCode'],
-                    'data' => $service,
-                ]);
-            });
+            ->map(fn(array $service) => new Service([
+                'carrier' => $this->normalizeCarrierName($service['CarrierCode']),
+                'name' => $service['ServiceCodeDesc'],
+                'value' => $service['ServiceCode'],
+                'data' => $service,
+            ]));
     }
 
     /**

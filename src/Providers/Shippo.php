@@ -141,15 +141,11 @@ final class Shippo extends BaseProvider
             'ups_expedited',
         ])
             ->filter(fn (string $service) => Str::startsWith($service, $carrierNames))
-            ->map(function (string $service) {
-                $carrier = $this->normalizeCarrierName(Str::title(Str::before($service, '_')));
-
-                return new Service([
-                    'carrier' => $carrier,
-                    'name' => $carrier . ' ' . Str::title(str_replace('_', ' ', Str::after($service, '_'))),
-                    'value' => $service,
-                ]);
-            });
+            ->map(fn(string $service) => new Service([
+                'carrier' => $this->normalizeCarrierName(Str::title(Str::before($service, '_'))),
+                'name' => Str::title(str_replace('_', ' ', Str::after($service, '_'))),
+                'value' => $service,
+            ]));
     }
 
     /**
