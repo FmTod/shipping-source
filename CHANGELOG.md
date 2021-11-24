@@ -2,6 +2,12 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.7.2 - 2021-11-24
+
+## What's Changed
+
+- Minor bug fixes
+
 ## 0.6.9 - 2021-11-24
 
 Revert change where carrier name was appended to the beginning of the service name
