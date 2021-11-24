@@ -44,8 +44,8 @@ final class ParcelPro extends BaseProvider
         parent::__construct($config, $parameters);
 
         $this->carriers = collect([
-            new Carrier(['name' => 'UPS', 'value' => 'UPS']),
-            new Carrier(['name' => 'FedEx', 'value' => 'FedEx']),
+            new Carrier(['provider' => self::NAME, 'name' => 'UPS', 'value' => 'UPS']),
+            new Carrier(['provider' => self::NAME, 'name' => 'FedEx', 'value' => 'FedEx']),
         ]);
     }
 
@@ -176,6 +176,7 @@ final class ParcelPro extends BaseProvider
             ])
             ->collect()
             ->map(fn(array $service) => new Service([
+                'provider' => self::NAME,
                 'carrier' => $this->normalizeCarrierName($service['CarrierCode']),
                 'name' => $service['ServiceCodeDesc'],
                 'value' => $service['ServiceCode'],
