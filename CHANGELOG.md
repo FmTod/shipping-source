@@ -2,6 +2,12 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.6.7 - 2021-11-24
+
+- Allow shipping facade to be initialized statically and added a few more helper methods.
+- Fix exception in ShippoTest.php caused by a parenthesis left behind from previous code.
+- Added carrier at the beginning of every service name and normalized carrier names.
+
 ## 0.6.5 - 2021-11-24
 
 Allow shipping providers to be called statically
