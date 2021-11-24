@@ -4,6 +4,13 @@ namespace FmTod\Shipping\Concerns;
 
 trait HasShippableAddressAttributes
 {
+
+    /**
+     * Get an address attribute from the object using the trait.
+     *
+     * @param string $attribute
+     * @return mixed
+     */
     protected function getAttributeForShippingAddress(string $attribute): mixed
     {
         return $this->getAttribute($attribute);
