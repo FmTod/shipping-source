@@ -28,7 +28,7 @@ final class Shippo extends BaseProvider
      * @param array $config the configuration data
      * @param array|null $shipment
      */
-    public function __construct(array $config, ?array $shipment = null)
+    public function __construct(array $config = [], ?array $shipment = null)
     {
         parent::__construct(array_replace([
             'dimension_unit' => 'in',
