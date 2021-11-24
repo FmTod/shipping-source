@@ -62,13 +62,13 @@ it('can retrieve services', function () {
     expect($carriers->first())->toBeInstanceOf(Service::class);
 });
 
-it('can retrieve rates', function () {
+it('can retrieve domestic rates', function () {
     $carriers = $this->service->rates();
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Rate::class);
 });
 
-it('can create a shipment', function () {
+it('can create a domestic shipment', function () {
     $rate = $this->service->rates()->where('provider.name', Shippo::NAME)->first();
     expect($rate)->toBeInstanceOf(Rate::class);
 

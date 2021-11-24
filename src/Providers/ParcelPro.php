@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
 use RuntimeException;
 
-class ParcelPro extends BaseProvider
+final class ParcelPro extends BaseProvider
 {
     public const NAME = 'ParcelPro';
 
@@ -40,7 +40,7 @@ class ParcelPro extends BaseProvider
      * @param array $config
      * @param array|null $parameters
      */
-    public function __construct(array $config, ?array $parameters = null)
+    public function __construct(array $config = [], ?array $parameters = null)
     {
         parent::__construct($config, $parameters);
 

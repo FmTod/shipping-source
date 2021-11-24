@@ -10,6 +10,8 @@ use Illuminate\Support\Collection;
 
 interface ShippingProvider
 {
+    public function __construct(array $config, ?array $parameters = null);
+
     public function getCarriers(): Collection;
 
     public function getServices(): Collection;

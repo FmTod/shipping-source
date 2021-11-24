@@ -13,9 +13,44 @@ use FmTod\Shipping\Providers\Shippo;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
-beforeEach(function () {
-    $this->service = new Shippo(["access_token" => env('SHIPPO_TOKEN')], [
-        'consignor' => new Address([
+beforeEach(fn () => $this->service = new Shippo(["access_token" => env('SHIPPO_TOKEN')], [
+    'consignor' => new Address([
+        'first_name' => 'Fulanito',
+        'last_name' => 'Perez',
+        'phone_number' => '7862691385',
+        'email' => faker()->freeEmail,
+        'street_address1' => '169 E Flagler St',
+        'city' => 'Miami',
+        'state' => 'FL',
+        'postal_code' => '33131',
+        'country_code' => 'US',
+        'is_residential' => false,
+    ], true),
+    'consignee' => new Address([
+        'first_name' => 'Fulanito',
+        'last_name' => 'Perez',
+        'phone_number' => '7862691385',
+        'email' => faker()->freeEmail,
+        'street_address1' => '169 E Flagler St',
+        'city' => 'Miami',
+        'state' => 'FL',
+        'postal_code' => '33131',
+        'country_code' => 'US',
+        'is_residential' => false,
+    ], true),
+    'package' => new Package(10, [13, 10, 3]),
+]));
+
+it('can be constructed')
+    ->expect(fn () => $this->service)
+    ->toBeInstanceOf(Shippo::class);
+
+it('can be called statically')
+    ->expect(fn () => Shippo::config([
+            "client_key" => env('PARCELPRO_KEY'),
+            "client_secret" => env('PARCELPRO_SECRET'),
+        ])
+        ->setConsignor(new Address([
             'first_name' => 'Fulanito',
             'last_name' => 'Perez',
             'phone_number' => '7862691385',
@@ -26,8 +61,8 @@ beforeEach(function () {
             'postal_code' => '33131',
             'country_code' => 'US',
             'is_residential' => false,
-        ], true),
-        'consignee' => new Address([
+        ], true))
+        ->setConsignee(new Address([
             'first_name' => 'Fulanito',
             'last_name' => 'Perez',
             'phone_number' => '7862691385',
@@ -38,30 +73,25 @@ beforeEach(function () {
             'postal_code' => '33131',
             'country_code' => 'US',
             'is_residential' => false,
-        ], true),
-        'package' => new Package(10, [13, 10, 3]),
-    ]);
-});
+        ], true))
+        ->setPackage(new Package(10, [13, 10, 3])))
+    ->toBeInstanceOf(Shippo::class);
 
-test('Constructor', function () {
-    expect($this->service)->toBeInstanceOf(Shippo::class);
-});
-
-test('Carriers', function () {
+it('can retrieve carriers', function () {
     $carriers = $this->service->getCarriers();
 
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Carrier::class);
 });
 
-test('Services', function () {
+it('can retrieve services', function () {
     $services = $this->service->getServices();
 
     expect($services)->toBeInstanceOf(Collection::class);
     expect($services->first())->toBeInstanceOf(Service::class);
 });
 
-test('Estimator', function () {
+it('can retrieve domestic rates', function () {
     $rates = $this->service->getRates();
     expect($rates)->toBeInstanceOf(Collection::class);
 
@@ -76,7 +106,7 @@ test('Estimator', function () {
     expect($rate->amount)->toBeInstanceOf(Money::class);
 });
 
-test('Rates', function () {
+it('can retrieve domestic rate for a specific carrier and service', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     expect($carrier)->toBeInstanceOf(Carrier::class);
 
@@ -96,7 +126,7 @@ test('Rates', function () {
     expect($rate->amount)->toBeInstanceOf(Money::class);
 });
 
-test('Label', function () {
+it('can create a domestic shipment', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     $services = $this->service->getServices();
     $service = $services->where('carrier', $carrier->name)->first();

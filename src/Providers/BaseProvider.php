@@ -8,6 +8,12 @@ use FmTod\Shipping\Contracts\ShippingProvider;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
+/**
+ * @method static static config(array $config = [])
+ * @method static static consignor(ShippableAddress $config = [])
+ * @method static static consignee(ShippableAddress $config = [])
+ * @method static static package(ShippablePackage $config = [])
+ */
 abstract class BaseProvider implements ShippingProvider
 {
     /**
@@ -43,7 +49,7 @@ abstract class BaseProvider implements ShippingProvider
      * @param array $config the configuration data
      * @param array|null $parameters
      */
-    public function __construct(array $config, ?array $parameters = null)
+    public function __construct(array $config = [], ?array $parameters = null)
     {
         $this->carriers = collect([]);
         $this->services = collect([]);
@@ -73,7 +79,7 @@ abstract class BaseProvider implements ShippingProvider
     public function setConfig(array $config = []): static
     {
         // validate the config array
-        if (! is_array($config) || empty($config)) {
+        if (! is_array($config)) {
             throw new InvalidArgumentException('Config array is not valid or empty.');
         }
         // set the object config array
@@ -82,6 +88,12 @@ abstract class BaseProvider implements ShippingProvider
         return $this;
     }
 
+    /**
+     * Set the consignor for the shipping provider
+     *
+     * @param \FmTod\Shipping\Contracts\ShippableAddress $address
+     * @return $this
+     */
     public function setConsignor(ShippableAddress $address): static
     {
         $this->consignor = $address;
@@ -163,5 +175,21 @@ abstract class BaseProvider implements ShippingProvider
     public function getServices(): Collection
     {
         return $this->services;
+    }
+
+    /**
+     * Handle dynamic static method calls into the method.
+     *
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public static function __callStatic(string $method, array $parameters)
+    {
+        $instance = new static();
+
+        $methodName = 'set'.ucfirst($method);
+
+        return call_user_func_array([$instance, $methodName], $parameters);
     }
 }

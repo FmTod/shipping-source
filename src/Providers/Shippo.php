@@ -18,7 +18,7 @@ use Shippo_Object;
 use Shippo_Shipment;
 use Shippo_Transaction;
 
-class Shippo extends BaseProvider
+final class Shippo extends BaseProvider
 {
     public const NAME = 'Shippo';
 
@@ -253,7 +253,7 @@ class Shippo extends BaseProvider
                     'height' => $package->getHeight($this->config['dimension_unit']),
                     'distance_unit' => $this->config['dimension_unit'],
                     'mass_unit' => $this->config['weight_unit'],
-                ]
+                ],
             ],
             'async' => false,
         ];

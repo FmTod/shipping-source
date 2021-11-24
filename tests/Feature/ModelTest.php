@@ -4,12 +4,12 @@ use FmTod\Shipping\Exceptions\MassAssignmentException;
 use FmTod\Shipping\Tests\stubs\ModelStub;
 use Illuminate\Support\Collection;
 
-test('Constructor', function () {
+it('can be constructed', function () {
     $model = new ModelStub(['name' => 'john']);
     $this->assertEquals('john', $model->name);
 });
 
-test('AttributeManipulation', function () {
+it('can manipulate attributes', function () {
     $model = new ModelStub();
     $model->name = 'foo';
 
@@ -24,14 +24,14 @@ test('AttributeManipulation', function () {
     $this->assertFalse(isset($model['name']));
 });
 
-test('NewInstanceWithAttributes', function () {
+it('can create a new instance with attributes', function () {
     $model = new ModelStub();
     $instance = $model->newInstance(['name' => 'john']);
 
     $this->assertEquals('john', $instance->name);
 });
 
-test('Hidden', function () {
+it('can make attributes hidden', function () {
     $model = new ModelStub();
     $model->password = 'secret';
 
@@ -40,7 +40,7 @@ test('Hidden', function () {
     $this->assertEquals(['password'], $model->getHidden());
 });
 
-test('Visible', function () {
+it('can make attributes visible', function () {
     $model = new ModelStub();
     $model->setVisible(['name']);
     $model->name = 'John Doe';
@@ -50,7 +50,7 @@ test('Visible', function () {
     $this->assertEquals(['name' => 'John Doe'], $attributes);
 });
 
-test('ToArray', function () {
+it('can be converted to array', function () {
     $model = new ModelStub();
     $model->name = 'foo';
     $model->bar = null;
@@ -71,7 +71,7 @@ test('ToArray', function () {
     $this->assertTrue(isset($array['password']));
 });
 
-test('ToJson', function () {
+it('can be converted to JSON', function () {
     $model = new ModelStub();
     $model->name = 'john';
     $model->foo = 10;
@@ -84,7 +84,7 @@ test('ToJson', function () {
     $this->assertEquals(json_encode($object), (string) $model);
 });
 
-test('Mutator', function () {
+it('uses attribute mutators', function () {
     $model = new ModelStub();
     $model->list_items = ['name' => 'john'];
     $this->assertEquals(['name' => 'john'], $model->list_items);
@@ -100,7 +100,7 @@ test('Mutator', function () {
     $this->assertEquals(20, $model->age);
 });
 
-test('ToArrayUsesMutators', function () {
+it('uses attribute mutators in array conversion', function () {
     $model = new ModelStub();
     $model->list_items = [1, 2, 3];
     $array = $model->toArray();
@@ -108,7 +108,7 @@ test('ToArrayUsesMutators', function () {
     $this->assertEquals([1, 2, 3], $array['list_items']);
 });
 
-test('Replicate', function () {
+it('can replicate instance', function () {
     $model = new ModelStub();
     $model->name = 'John Doe';
     $model->city = 'Paris';
@@ -118,7 +118,7 @@ test('Replicate', function () {
     $this->assertEquals($model->name, $clone->name);
 });
 
-test('Appends', function () {
+it('can make attributes appended', function () {
     $model = new ModelStub();
     $array = $model->toArray();
     $this->assertFalse(isset($array['test']));
@@ -130,7 +130,7 @@ test('Appends', function () {
     $this->assertEquals('test', $array['test']);
 });
 
-test('ArrayAccess', function () {
+it('can be accessed as array', function () {
     $model = new ModelStub();
     $model->name = 'John Doen';
     $model['city'] = 'Paris';
@@ -139,7 +139,7 @@ test('ArrayAccess', function () {
     $this->assertEquals($model->city, $model['city']);
 });
 
-test('Serialize', function () {
+it('can be serialized', function () {
     $model = new ModelStub();
     $model->name = 'john';
     $model->foo = 10;
@@ -148,7 +148,7 @@ test('Serialize', function () {
     $this->assertEquals($model, unserialize($serialized));
 });
 
-test('Casts', function () {
+it('can cast attributes', function () {
     $model = new ModelStub();
     $model->score = '0.34';
     $model->data = ['foo' => 'bar'];
@@ -185,7 +185,7 @@ test('Casts', function () {
     $this->assertInstanceOf(Collection::class, $array['collection_data']);
 });
 
-test('Guarded', function () {
+it('can be guarded', function () {
     $model = new ModelStub(['secret' => 'foo']);
     $this->assertTrue($model->isGuarded('secret'));
     $this->assertNull($model->secret);
@@ -203,7 +203,7 @@ test('Guarded', function () {
     ModelStub::reguard();
 });
 
-test('GuardedCallback', function () {
+it('call callback when guarded', function () {
     ModelStub::unguard();
     $mock = $this->getMockBuilder('stdClass')
         ->setMethods(['callback'])
@@ -216,7 +216,7 @@ test('GuardedCallback', function () {
     ModelStub::reguard();
 });
 
-test('TotallyGuarded', function () {
+it('can be totally guarded', function () {
     $this->expectException(MassAssignmentException::class);
 
     $model = new ModelStub();
@@ -225,7 +225,7 @@ test('TotallyGuarded', function () {
     $model->fill(['name' => 'John Doe']);
 });
 
-test('Fillable', function () {
+it('can be fillable', function () {
     $model = new ModelStub(['foo' => 'bar']);
     $this->assertFalse($model->isFillable('foo'));
     $this->assertNull($model->foo);
@@ -239,12 +239,12 @@ test('Fillable', function () {
     $this->assertEquals('bar', $model->foo);
 });
 
-test('Hydrate', function () {
+it('can be hydrated', function () {
     $models = ModelStub::hydrate([['name' => 'John Doe']]);
     $this->assertEquals('John Doe', $models[0]->name);
 });
 
-test('Validate', function () {
+it('can be validated', function () {
     $model = new ModelStub(['name' => 'bar']);
     $model->setRules(['name' => 'required|string']);
     $this->assertTrue($model->validate());
