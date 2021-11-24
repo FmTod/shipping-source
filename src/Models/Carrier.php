@@ -5,7 +5,8 @@ namespace FmTod\Shipping\Models;
 /**
  * Class Carrier.
  *
- * @property string|null $name
+ * @property string $provider
+ * @property string $name
  * @property string $value
  */
 class Carrier extends Model
