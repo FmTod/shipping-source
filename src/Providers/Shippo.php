@@ -69,7 +69,7 @@ final class Shippo extends BaseProvider
 
         /* @phpstan-ignore-next-line */
         return collect($response['results'])
-            ->map(fn(Shippo_Object $account) => new Carrier([
+            ->map(fn (Shippo_Object $account) => new Carrier([
                 'provider' => self::NAME,
                 'name' => match (true) {
                     stripos($account['carrier'], "fedex") !== false => 'FedEx',
@@ -141,7 +141,7 @@ final class Shippo extends BaseProvider
             'ups_expedited',
         ])
             ->filter(fn (string $service) => Str::startsWith($service, $carrierNames))
-            ->map(fn(string $service) => new Service([
+            ->map(fn (string $service) => new Service([
                 'provider' => self::NAME,
                 'carrier' => $this->normalizeCarrierName(Str::title(Str::before($service, '_'))),
                 'name' => Str::title(str_replace('_', ' ', Str::after($service, '_'))),
