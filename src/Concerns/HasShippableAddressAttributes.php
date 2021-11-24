@@ -4,7 +4,6 @@ namespace FmTod\Shipping\Concerns;
 
 trait HasShippableAddressAttributes
 {
-
     /**
      * Get an address attribute from the object using the trait.
      *
