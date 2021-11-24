@@ -134,4 +134,4 @@ it('can create a domestic shipment', function () {
     $shipment = $this->service->createShipment($rate);
 
     expect($shipment)->toBeInstanceOf(Shipment::class);
-})();
+});
