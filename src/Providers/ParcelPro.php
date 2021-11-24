@@ -4,9 +4,8 @@ namespace FmTod\Shipping\Providers;
 
 use Exception;
 use FmTod\Money\Money;
-use FmTod\Shipping\Contracts\Shippable;
+use FmTod\Shipping\Contracts\ShippableAddress;
 use FmTod\Shipping\Enums\LabelType;
-use FmTod\Shipping\Models\Address;
 use FmTod\Shipping\Models\Carrier;
 use FmTod\Shipping\Models\Duration;
 use FmTod\Shipping\Models\Label;
@@ -25,7 +24,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
+use RuntimeException;
 
 class ParcelPro extends BaseProvider
 {
@@ -37,11 +38,11 @@ class ParcelPro extends BaseProvider
      * Return a new instance of ParcelPro service.
      *
      * @param array $config
-     * @param \FmTod\Shipping\Contracts\Shippable|null $shippable
+     * @param array|null $parameters
      */
-    public function __construct(array $config, Shippable $shippable = null)
+    public function __construct(array $config, ?array $parameters = null)
     {
-        parent::__construct($config, $shippable);
+        parent::__construct($config, $parameters);
 
         $this->carriers = collect([
             new Carrier(['name' => 'UPS', 'value' => 'UPS']),
@@ -121,7 +122,7 @@ class ParcelPro extends BaseProvider
             ->withToken($token['access_token'])
             ->$method($endpoint, $data)
             ->onError(function (Response $response) {
-                throw new Exception('API Error: '.$response->json('Message'), $response->json('Code'));
+                throw new RuntimeException('API Error: '.$response->json('Message'), $response->json('Code'));
             });
     }
 
@@ -223,33 +224,25 @@ class ParcelPro extends BaseProvider
     /**
      * Build PPIContact from Shipping address object.
      *
-     * @param Address $address
+     * @param \FmTod\Shipping\Contracts\ShippableAddress $address
      * @return PPIContact
      */
-    private function buildContact(Address $address): PPIContact
+    private function buildContact(ShippableAddress $address): PPIContact
     {
-        if (empty($address->full_name)) {
-            $address->full_name = $address->company;
-        }
-
-        if (empty($address->last_name)) {
-            $address->last_name = $address->first_name;
-        }
-
         return new PPIContact([
-            'FirstName' => $address->first_name,
-            'LastName' => $address->last_name,
-            'CompanyName' => $address->company ?? $address->full_name,
-            'StreetAddress' => $address->address1,
-            'ApartmentSuite' => $address->address2 ?? '',
-            'City' => $address->city,
-            'State' => $address->state,
-            'Zip' => (str_contains($address->postal_code, '-') ? substr($address->postal_code, 0, strpos($address->postal_code, '-')) : $address->postal_code),
-            'Country' => $address->country_code,
-            'Email' => $address->email,
-            'TelephoneNo' => preg_replace('/\D/', '', $address->phone),
             'ContactType' => ContactType::AddressBook,
-            'IsResidential' => (! empty($address->is_residential) ? $address->is_residential : false),
+            'FirstName' => $address->getFirstName(),
+            'LastName' => $address->getLastName(),
+            'CompanyName' => $address->getCompanyName() ?? '',
+            'StreetAddress' => $address->getStreetAddress1(),
+            'ApartmentSuite' => $address->getStreetAddress2() ?? '',
+            'City' => $address->getCity(),
+            'State' => $address->getState(),
+            'Zip' => str_replace(' ', '', Str::before($address->getPostalCode(), '-')),
+            'Country' => $address->getCountryCode(),
+            'Email' => $address->getEmail(),
+            'TelephoneNo' => preg_replace('/\D/', '', $address->getPhoneNumber()),
+            'IsResidential' => $address->getIsResidential(),
         ]);
     }
 
@@ -288,11 +281,15 @@ class ParcelPro extends BaseProvider
             $service = $service->value;
         }
 
-        throw_if(! $this->getShippable(), 'No shipment was provided.');
+        $consignor = $this->getConsignor();
+        $consignee = $this->getConsignee();
+        $package = $this->getPackage();
 
-        $shipFrom = $this->getShippable()->getShipFromAddress();
-        $shipTo = $this->getShippable()->getShipToAddress();
-        $packages = $this->getShippable()->getPackages();
+        throw_if(! $consignor, 'A consignor must be provided in order to request a rate.');
+        throw_if(! $consignee, 'A consignee must be provided in order to request a rate.');
+        throw_if(! $package, 'A package must be provided in order to request a rate.');
+
+        $international = $consignee->getCountryCode() !== 'US';
 
         $quote = new PPIQuote([
             'CarrierCode' => match (strtolower($carrier)) {
@@ -301,12 +298,12 @@ class ParcelPro extends BaseProvider
                 default => $carrier
             },
             'ServiceCode' => $service,
-            'ShipFrom' => $this->buildContact($shipFrom),
-            'ShipTo' => $this->buildContact($shipTo),
-            'Length' => ceil($packages[0]->get('length')),
-            'Width' => ceil($packages[0]->get('width')),
-            'Height' => ceil($packages[0]->get('height')),
-            'Weight' => ceil($packages[0]->get('weight')),
+            'ShipFrom' => $this->buildContact($consignor),
+            'ShipTo' => $this->buildContact($consignee),
+            'Length' => ceil($package->getLength()),
+            'Width' => ceil($package->getWidth()),
+            'Height' => ceil($package->getHeight()),
+            'Weight' => ceil($package->getWeight()),
             'InsuredValue' => $parameters['insurance'] ?? 1,
             'IsDeliveryConfirmation' => $parameters['adult_signature'] ?? false,
             'IsSaturdayDelivery' => $parameters['saturday_delivery'] ?? false,
@@ -314,8 +311,8 @@ class ParcelPro extends BaseProvider
             'CustomerReferenceNumber' => $parameters['reference'] ?? '',
 
             // International Shipment
-            'IsInternational' => $shipTo->country_code !== 'US',
-            'IsCommercialInvoice' => $shipTo->country_code !== 'US',
+            'IsInternational' => $international,
+            'IsCommercialInvoice' => $international,
             'ShipmentPurpose' => $parameters['purpose'] ?? '',
             'PackageContent' => $parameters['content'] ?? '',
             'Commodities' => $parameters['commodities'] ?? [],
@@ -341,21 +338,21 @@ class ParcelPro extends BaseProvider
      */
     public function getRates(array $parameters = []): Collection
     {
-        $shipment = $this->getShippable();
+        $consignor = $this->getConsignor();
+        $consignee = $this->getConsignee();
+        $package = $this->getPackage();
 
-        throw_if(! $shipment, 'No shipment was provided.');
-
-        $shipFrom = $shipment->getShipFromAddress();
-        $shipTo = $shipment->getShipToAddress();
-        $packages = $shipment->getPackages();
+        throw_if(! $consignor, 'A consignor must be provided in order to request a rate.');
+        throw_if(! $consignee, 'A consignee must be provided in order to request a rate.');
+        throw_if(! $package, 'A package must be provided in order to request a rate.');
 
         $request = new PPIEstimatorRequest([
-            'ShipFrom' => $this->buildContact($shipFrom),
-            'ShipTo' => $this->buildContact($shipTo),
-            'Length' => ceil($packages[0]->get('length')),
-            'Width' => ceil($packages[0]->get('width')),
-            'Height' => ceil($packages[0]->get('height')),
-            'Weight' => ceil($packages[0]->get('weight')),
+            'ShipFrom' => $this->buildContact($consignor),
+            'ShipTo' => $this->buildContact($consignee),
+            'Length' => ceil($package->getLength()),
+            'Width' => ceil($package->getWidth()),
+            'Height' => ceil($package->getHeight()),
+            'Weight' => ceil($package->getWeight()),
             'InsuredValue' => $parameters['insurance'] ?? 1,
             'IsDeliveryConfirmation' => $parameters['adult_signature'] ?? false,
             'IsSaturdayDelivery' => $parameters['saturday_delivery'] ?? false,

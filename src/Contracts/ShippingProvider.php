@@ -8,15 +8,23 @@ use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
 use Illuminate\Support\Collection;
 
-interface ShippingService
+interface ShippingProvider
 {
     public function getCarriers(): Collection;
 
     public function getServices(): Collection;
 
-    public function setShippable(Shippable $shipment): static;
+    public function setConsignor(ShippableAddress $shipment): static;
 
-    public function getShippable(): ?Shippable;
+    public function setConsignee(ShippableAddress $shipment): static;
+
+    public function setPackage(ShippablePackage $shipment): static;
+
+    public function getConsignor(): ?ShippableAddress;
+
+    public function getConsignee(): ?ShippableAddress;
+
+    public function getPackage(): ?ShippablePackage;
 
     public function setConfig(array $config): static;
 

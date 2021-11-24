@@ -3,12 +3,10 @@
 namespace FmTod\Shipping\Providers;
 
 use FmTod\Money\Money;
-use FmTod\Shipping\Contracts\Shippable;
 use FmTod\Shipping\Enums\LabelType;
 use FmTod\Shipping\Models\Carrier;
 use FmTod\Shipping\Models\Duration;
 use FmTod\Shipping\Models\Label;
-use FmTod\Shipping\Models\Package;
 use FmTod\Shipping\Models\Provider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
@@ -28,10 +26,9 @@ class Shippo extends BaseProvider
      * Constructor function - sets object properties.
      *
      * @param array $config the configuration data
-     * @param Shippable|null $shipment
-     * @return void
+     * @param array|null $shipment
      */
-    public function __construct(array $config, Shippable $shipment = null)
+    public function __construct(array $config, ?array $shipment = null)
     {
         parent::__construct(array_replace([
             'dimension_unit' => 'in',
@@ -213,49 +210,51 @@ class Shippo extends BaseProvider
      */
     public function getRates(array $parameters = []): Collection
     {
-        $shipment = $this->getShippable();
+        $consignor = $this->getConsignor();
+        $consignee = $this->getConsignee();
+        $package = $this->getPackage();
 
-        throw_if(! $shipment, 'No shipment was provided.');
-
-        $shipFrom = $shipment->getShipFromAddress();
-        $shipTo = $shipment->getShipToAddress();
-        $packages = $shipment->getPackages();
+        throw_if(! $consignor, 'A consignor must be provided in order to request a rate.');
+        throw_if(! $consignee, 'A consignee must be provided in order to request a rate.');
+        throw_if(! $package, 'A package must be provided in order to request a rate.');
 
         $data = [
             'address_from' => [
-                'name' => $shipFrom->full_name,
-                'company' => $shipFrom->company ?? $shipFrom->full_name,
-                'street1' => $shipFrom->address1,
-                'street2' => $shipFrom->address2 ?? null,
-                'city' => $shipFrom->city,
-                'state' => $shipFrom->state,
-                'zip' => $shipFrom->postal_code,
-                'country' => $shipFrom->country_code,
-                'phone' => $shipFrom->phone,
-                'email' => $shipFrom->email,
-                'is_residential' => $shipFrom->is_residential,
+                'name' => $consignor->getFullName(),
+                'company' => $consignor->getCompanyName(),
+                'street1' => $consignor->getStreetAddress1(),
+                'street2' => $consignor->getStreetAddress2(),
+                'city' => $consignor->getCity(),
+                'state' => $consignor->getState(),
+                'zip' => $consignor->getPostalCode(),
+                'country' => $consignor->getCountryCode(),
+                'phone' => $consignor->getPhoneNumber(),
+                'email' => $consignor->getEmail(),
+                'is_residential' => $consignor->getIsResidential(),
             ],
             'address_to' => [
-                'name' => $shipTo->full_name,
-                'company' => $shipTo->company ?? $shipTo->full_name,
-                'street1' => $shipTo->address1,
-                'street2' => $shipTo->address2 ?? null,
-                'city' => $shipTo->city,
-                'state' => $shipTo->state,
-                'zip' => $shipTo->postal_code,
-                'country' => $shipTo->country_code,
-                'phone' => $shipTo->phone,
-                'email' => $shipTo->email,
-                'is_residential' => $shipTo->is_residential,
+                'name' => $consignee->getFullName(),
+                'company' => $consignee->getCompanyName(),
+                'street1' => $consignee->getStreetAddress1(),
+                'street2' => $consignee->getStreetAddress2(),
+                'city' => $consignee->getCity(),
+                'state' => $consignee->getState(),
+                'zip' => $consignee->getPostalCode(),
+                'country' => $consignee->getCountryCode(),
+                'phone' => $consignee->getPhoneNumber(),
+                'email' => $consignee->getEmail(),
+                'is_residential' => $consignee->getIsResidential(),
             ],
-            'parcels' => array_map(fn (Package $package) => [
-                'length' => ($package->get('length')),
-                'width' => ($package->get('width')),
-                'height' => ($package->get('height')),
-                'distance_unit' => strtolower($this->config['dimension_unit']),
-                'weight' => ($package->get('weight')),
-                'mass_unit' => strtolower($this->config['weight_unit']),
-            ], $packages),
+            'parcels' => [
+                [
+                    'weight' => $package->getWeight($this->config['weight_unit']),
+                    'length' => $package->getLength($this->config['dimension_unit']),
+                    'width' => $package->getWidth($this->config['dimension_unit']),
+                    'height' => $package->getHeight($this->config['dimension_unit']),
+                    'distance_unit' => $this->config['dimension_unit'],
+                    'mass_unit' => $this->config['weight_unit'],
+                ]
+            ],
             'async' => false,
         ];
 

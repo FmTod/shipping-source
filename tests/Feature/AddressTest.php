@@ -8,27 +8,28 @@ beforeEach(function () {
     $this->address = new Address([
         'first_name' => faker()->firstName,
         'last_name' => faker()->lastName,
-        'company' => faker()->company,
-        'phone' => faker()->phoneNumber,
+        'company_name' => faker()->company,
+        'phone_number' => faker()->phoneNumber,
         'email' => faker()->freeEmail,
-        'address1' => faker()->streetAddress,
+        'street_address1' => faker()->streetAddress,
         'city' => faker()->city,
         'state' => faker()->stateAbbr,
         'postal_code' => faker()->postcode,
         'country_code' => faker()->countryCode,
+        'is_residential' => true,
     ]);
 });
 
 it('validates the attributes', function () {
     $this->assertTrue($this->address->validate());
 
-    unset($this->address->address1);
+    unset($this->address->street_address1);
     $this->assertFalse($this->address->validate());
 
-    $this->address->address1 = faker()->streetAddress;
+    $this->address->street_address1 = faker()->streetAddress;
     $this->assertTrue($this->address->validate());
 
-    unset($this->address->company);
+    unset($this->address->company_name);
     $this->assertTrue($this->address->validate());
 
     unset($this->address->first_name, $this->address->last_name);

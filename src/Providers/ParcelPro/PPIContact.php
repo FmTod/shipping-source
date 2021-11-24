@@ -25,7 +25,7 @@ class PPIContact extends PPIObject
         'UserId' => 0,
         'ProvinceRegion' => '',
         'FaxNo' => '',
-        'NickName' => 'Other',
+        'NickName' => '',
         'IsExpress' => false,
         'IsResidential' => false,
         'IsUserDefault' => false,

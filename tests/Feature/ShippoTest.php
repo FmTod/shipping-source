@@ -10,59 +10,56 @@ use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Service;
 use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Providers\Shippo;
-use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
 beforeEach(function () {
-    $shipment = new ShipmentStub(
-        to: new Address([
+    $this->service = new Shippo(["access_token" => env('SHIPPO_TOKEN')], [
+        'consignor' => new Address([
             'first_name' => 'Fulanito',
             'last_name' => 'Perez',
-            'phone' => '7862691385',
+            'phone_number' => '7862691385',
             'email' => faker()->freeEmail,
-            'address1' => '169 E Flagler St',
+            'street_address1' => '169 E Flagler St',
             'city' => 'Miami',
             'state' => 'FL',
             'postal_code' => '33131',
             'country_code' => 'US',
             'is_residential' => false,
         ], true),
-        from: new Address([
+        'consignee' => new Address([
             'first_name' => 'Fulanito',
             'last_name' => 'Perez',
-            'phone' => '7862691385',
+            'phone_number' => '7862691385',
             'email' => faker()->freeEmail,
-            'address1' => '169 E Flagler St',
+            'street_address1' => '169 E Flagler St',
             'city' => 'Miami',
             'state' => 'FL',
             'postal_code' => '33131',
             'country_code' => 'US',
             'is_residential' => false,
         ], true),
-        packages: [new Package(10, [13, 10, 3])]
-    );
-
-    $this->service = new Shippo(["access_token" => env('SHIPPO_TOKEN')], $shipment);
+        'package' => new Package(10, [13, 10, 3]),
+    ]);
 });
 
 test('Constructor', function () {
     expect($this->service)->toBeInstanceOf(Shippo::class);
-})->skip();
+});
 
 test('Carriers', function () {
     $carriers = $this->service->getCarriers();
 
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Carrier::class);
-})->skip();
+});
 
 test('Services', function () {
     $services = $this->service->getServices();
 
     expect($services)->toBeInstanceOf(Collection::class);
     expect($services->first())->toBeInstanceOf(Service::class);
-})->skip();
+});
 
 test('Estimator', function () {
     $rates = $this->service->getRates();
@@ -77,7 +74,7 @@ test('Estimator', function () {
     expect($rate->duration->days)->toBeInt();
     expect($rate->duration->terms)->toBeString();
     expect($rate->amount)->toBeInstanceOf(Money::class);
-})->skip();
+});
 
 test('Rates', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
@@ -97,7 +94,7 @@ test('Rates', function () {
     expect($rate->duration->days)->toBeInt();
     expect($rate->duration->terms)->toBeString();
     expect($rate->amount)->toBeInstanceOf(Money::class);
-})->skip();
+});
 
 test('Label', function () {
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
@@ -107,4 +104,4 @@ test('Label', function () {
     $shipment = $this->service->createShipment($rate);
 
     expect($shipment)->toBeInstanceOf(Shipment::class);
-})->skip();
+})();

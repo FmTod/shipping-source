@@ -9,39 +9,10 @@ use FmTod\Shipping\Models\Shipment;
 use FmTod\Shipping\Providers\ParcelPro;
 use FmTod\Shipping\Providers\Shippo;
 use FmTod\Shipping\Shipping;
-use FmTod\Shipping\Tests\stubs\ShipmentStub;
 use Illuminate\Support\Collection;
 use function Pest\Faker\faker;
 
 beforeEach(function () {
-    $shipment = new ShipmentStub(
-        to: new Address([
-            'first_name' => 'Fulanito',
-            'last_name' => 'Perez',
-            'phone' => '7862691385',
-            'email' => faker()->freeEmail,
-            'address1' => '169 E Flagler St',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ], true),
-        from: new Address([
-            'first_name' => 'Fulanito',
-            'last_name' => 'Perez',
-            'phone' => '7862691385',
-            'email' => faker()->freeEmail,
-            'address1' => '169 E Flagler St',
-            'city' => 'Miami',
-            'state' => 'FL',
-            'postal_code' => '33131',
-            'country_code' => 'US',
-            'is_residential' => false,
-        ], true),
-        packages: [new Package(10, [13, 10, 3])]
-    );
-
     $this->service = new Shipping([
         ParcelPro::NAME => [
             "client_key" => env('PARCELPRO_KEY'),
@@ -50,7 +21,33 @@ beforeEach(function () {
         Shippo::NAME => [
             "access_token" => env('SHIPPO_TOKEN'),
         ],
-    ], $shipment);
+    ], [
+        'consignor' => new Address([
+            'first_name' => 'Fulanito',
+            'last_name' => 'Perez',
+            'phone_number' => '7862691385',
+            'email' => faker()->freeEmail,
+            'street_address1' => '169 E Flagler St',
+            'city' => 'Miami',
+            'state' => 'FL',
+            'postal_code' => '33131',
+            'country_code' => 'US',
+            'is_residential' => false,
+        ], true),
+        'consignee' => new Address([
+            'first_name' => 'Fulanito',
+            'last_name' => 'Perez',
+            'phone_number' => '7862691385',
+            'email' => faker()->freeEmail,
+            'street_address1' => '169 E Flagler St',
+            'city' => 'Miami',
+            'state' => 'FL',
+            'postal_code' => '33131',
+            'country_code' => 'US',
+            'is_residential' => false,
+        ], true),
+        'package' => new Package(10, [13, 10, 3]),
+    ]);
 });
 
 it('can retrieve carriers', function () {

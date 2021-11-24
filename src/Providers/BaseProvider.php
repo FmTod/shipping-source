@@ -2,12 +2,13 @@
 
 namespace FmTod\Shipping\Providers;
 
-use FmTod\Shipping\Contracts\Shippable;
-use FmTod\Shipping\Contracts\ShippingService;
+use FmTod\Shipping\Contracts\ShippableAddress;
+use FmTod\Shipping\Contracts\ShippablePackage;
+use FmTod\Shipping\Contracts\ShippingProvider;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
-abstract class BaseProvider implements ShippingService
+abstract class BaseProvider implements ShippingProvider
 {
     /**
      * Provider config
@@ -30,20 +31,19 @@ abstract class BaseProvider implements ShippingService
      */
     protected Collection $services;
 
-    /**
-     * The Shipment object to process which contains Package object(s).
-     *
-     * @var Shippable|null
-     */
-    protected Shippable|null $shippable = null;
+    protected ShippableAddress|null $consignor = null;
+
+    protected ShippableAddress|null $consignee = null;
+
+    protected ShippablePackage|null $package = null;
 
     /**
      * Constructor function - sets object properties.
      *
      * @param array $config the configuration data
-     * @param Shippable|null $shippable
+     * @param array|null $parameters
      */
-    public function __construct(array $config, Shippable $shippable = null)
+    public function __construct(array $config, ?array $parameters = null)
     {
         $this->carriers = collect([]);
         $this->services = collect([]);
@@ -51,9 +51,16 @@ abstract class BaseProvider implements ShippingService
         // set the config array property
         $this->setConfig($config);
 
-        // set the local reference of the Shipment object
-        if ($shippable !== null) {
-            $this->setShippable($shippable);
+        if (isset($parameters['consignor']) && $parameters['consignor'] instanceof ShippableAddress) {
+            $this->consignor = $parameters['consignor'];
+        }
+
+        if (isset($parameters['consignee']) && $parameters['consignee'] instanceof ShippableAddress) {
+            $this->consignee = $parameters['consignee'];
+        }
+
+        if (isset($parameters['package']) && $parameters['package'] instanceof ShippablePackage) {
+            $this->package = $parameters['package'];
         }
     }
 
@@ -75,29 +82,67 @@ abstract class BaseProvider implements ShippingService
         return $this;
     }
 
-    /**
-     * Sets the IShipment object for which rates or labels will be generated.
-     *
-     * @param Shippable $shipment
-     * @return static
-     */
-    public function setShippable(Shippable $shipment): static
+    public function setConsignor(ShippableAddress $address): static
     {
-        $this->shippable = $shipment;
+        $this->consignor = $address;
 
         return $this;
     }
 
     /**
-     * Retrieves the shipment object.
+     * Set consignee for the shipping provider
      *
-     * @return \FmTod\Shipping\Contracts\Shippable|null shipment
-     * @version updated 12/09/2012
-     * @since 12/08/2012
+     * @param \FmTod\Shipping\Contracts\ShippableAddress $address
+     * @return $this
      */
-    public function getShippable(): ?Shippable
+    public function setConsignee(ShippableAddress $address): static
     {
-        return $this->shippable;
+        $this->consignee = $address;
+
+        return $this;
+    }
+
+    /**
+     * Set package for the shipping provider
+     *
+     * @param \FmTod\Shipping\Contracts\ShippablePackage $package
+     * @return $this
+     */
+    public function setPackage(ShippablePackage $package): static
+    {
+        $this->package = $package;
+
+        return $this;
+    }
+
+    /**
+     * Get the consignor for the shipping provider
+     *
+     * @return \FmTod\Shipping\Contracts\ShippableAddress|null
+     */
+    public function getConsignor(): ?ShippableAddress
+    {
+        return $this->consignor;
+    }
+
+    /**
+     * Get the consignee for the shipping provider
+     *
+     * @return \FmTod\Shipping\Contracts\ShippableAddress|null
+     */
+    public function getConsignee(): ?ShippableAddress
+    {
+        return $this->consignee;
+    }
+
+    /**
+     * Get the package for the shipping provider
+     *
+     * @return \FmTod\Shipping\Contracts\ShippablePackage|null
+     */
+    public function getPackage(): ?ShippablePackage
+    {
+        return $this->package;
     }
 
     /**

@@ -2,8 +2,7 @@
 
 namespace FmTod\Shipping;
 
-use FmTod\Shipping\Contracts\Shippable;
-use FmTod\Shipping\Contracts\ShippingService;
+use FmTod\Shipping\Contracts\ShippingProvider;
 use FmTod\Shipping\Models\Rate;
 use FmTod\Shipping\Models\Shipment;
 use Illuminate\Support\Collection;
@@ -22,32 +21,32 @@ class Shipping
      *
      * @param string $name
      * @param array $config
-     * @param \FmTod\Shipping\Contracts\Shippable|null $shipment
-     * @return ShippingService
+     * @param array $parameters
+     * @return ShippingProvider
      *
      * @throws \Throwable
      */
-    public static function provider(string $name, array $config = [], Shippable $shipment = null): ShippingService
+    public static function provider(string $name, array $config = [], array $parameters = []): ShippingProvider
     {
         $providers = config('shipping.providers');
 
         throw_if(! class_exists($providers[$name]), "The provided shipping provider [$name] does not exist.");
 
-        return new $providers[$name]($config, $shipment);
+        return new $providers[$name]($config, $parameters);
     }
 
     /**
      * Create new instance of the class
      *
      * @param array $configs
-     * @param \FmTod\Shipping\Contracts\Shippable $shipment
+     * @param array $parameters
      *
      * @throws \Throwable
      */
-    public function __construct(array $configs, Shippable $shipment)
+    public function __construct(array $configs, array $parameters)
     {
         $this->providers = collect($configs)
-            ->mapWithKeys(fn ($config, $provider) => [$provider => self::provider($provider, $config, $shipment)]);
+            ->mapWithKeys(fn ($config, $provider) => [$provider => self::provider($provider, $config, $parameters)]);
     }
 
     /**
@@ -64,7 +63,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn (ShippingService $provider) => $provider->getCarriers())
+            ->map(fn (ShippingProvider $provider) => $provider->getCarriers())
             ->flatten(1);
     }
 
@@ -82,7 +81,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn (ShippingService $provider) => $provider->getServices())
+            ->map(fn (ShippingProvider $provider) => $provider->getServices())
             ->flatten(1);
     }
 
@@ -101,7 +100,7 @@ class Shipping
 
         return $this->providers
             ->values()
-            ->map(fn (ShippingService $provider) => $provider->getRates($parameters))
+            ->map(fn (ShippingProvider $provider) => $provider->getRates($parameters))
             ->flatten(1);
     }
 
