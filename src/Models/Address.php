@@ -35,8 +35,8 @@ use Illuminate\Support\Str;
  */
 class Address extends Model implements ShippableAddress
 {
-    use HasShippableAddressAttributes,
-        FormatsCountryCodes;
+    use HasShippableAddressAttributes;
+    use FormatsCountryCodes;
 
     protected array $fillable = [
         'first_name',
@@ -163,6 +163,4 @@ class Address extends Model implements ShippableAddress
     {
         $this->attributes['country_code'] = self::formatCountryCode($value);
     }
-
-
 }
