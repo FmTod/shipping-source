@@ -34,7 +34,23 @@ final class Shippo extends BaseProvider
             'dimension_unit' => 'in',
             'weight_unit' => 'lb',
         ], $config), $shipment);
-        \Shippo::setApiKey($config['access_token']);
+    }
+
+    /**
+     * Validate the config array and sets it as an object property.
+     *
+     * @param array $config
+     * @return static
+     */
+    public function setConfig(array $config = []): static
+    {
+        parent::setConfig($config);
+
+        if (isset($config['access_token'])) {
+            \Shippo::setApiKey($config['access_token']);
+        }
+
+        return $this;
     }
 
     /**
