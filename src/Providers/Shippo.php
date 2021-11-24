@@ -126,15 +126,12 @@ final class Shippo extends BaseProvider
         ])
             ->filter(fn (string $service) => Str::startsWith($service, $carrierNames))
             ->map(function (string $service) {
+                $carrier = $this->normalizeCarrierName(Str::title(Str::before($service, '_')));
+
                 return new Service([
-                    'name' => Str::title(Str::after($service, '_')),
+                    'carrier' => $carrier,
+                    'name' => $carrier . ' ' . Str::title(str_replace('_', ' ', Str::after($service, '_'))),
                     'value' => $service,
-                    'carrier' => match (Str::before($service, '_')) {
-                        'ups' => 'UPS',
-                        'fedex' => 'FedEx',
-                        'usps' => 'USPS',
-                        default => Str::title(Str::before($service, '_'))
-                    },
                 ]);
             });
     }

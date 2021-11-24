@@ -2,7 +2,6 @@
 
 namespace FmTod\Shipping\Providers;
 
-use Exception;
 use FmTod\Money\Money;
 use FmTod\Shipping\Contracts\ShippableAddress;
 use FmTod\Shipping\Enums\LabelType;
@@ -66,7 +65,7 @@ final class ParcelPro extends BaseProvider
         ]);
 
         if ($response->failed()) {
-            throw new Exception($response->json('Message'), $response->json('Code'));
+            throw new RuntimeException($response->json('Message'), $response->json('Code'));
         }
 
         $token = [
@@ -112,8 +111,9 @@ final class ParcelPro extends BaseProvider
     {
         $allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
         $method = strtolower($method);
+
         if (! in_array($method, $allowedMethods)) {
-            throw new Exception("The method [$method] is not allowed.");
+            throw new RuntimeException("The method [$method] is not allowed.");
         }
 
         $token = $this->getToken();
@@ -124,6 +124,21 @@ final class ParcelPro extends BaseProvider
             ->onError(function (Response $response) {
                 throw new RuntimeException('API Error: '.$response->json('Message'), $response->json('Code'));
             });
+    }
+
+    /**
+     * Convert all of ParcelPro carrier values to one.
+     *
+     * @param string $carrier
+     * @return string
+     */
+    protected function normalizeCarrierName(string $carrier): string
+    {
+        return match (strtolower($carrier)) {
+            'ups','1' => 'UPS',
+            'fedex','2' => 'FedEx',
+            default => $carrier
+        };
     }
 
     /**
@@ -156,16 +171,20 @@ final class ParcelPro extends BaseProvider
         }
 
         return $this->request('carriers/services', [
-            'isDomestic' => $domestic ? 'true' : 'false',
-            'CarrierCode' => $carrier,
-        ])
+                'isDomestic' => $domestic ? 'true' : 'false',
+                'CarrierCode' => $carrier,
+            ])
             ->collect()
-            ->map(fn (array $service) => new Service([
-                'carrier' => $service['CarrierCode'],
-                'name' => $service['ServiceCodeDesc'],
-                'value' => $service['ServiceCode'],
-                'data' => $service,
-            ]));
+            ->map(function (array $service) {
+                $carrier = $this->normalizeCarrierName($service['CarrierCode']);
+
+                return new Service([
+                    'carrier' => $carrier,
+                    'name' => $carrier . ' ' . $service['ServiceCodeDesc'],
+                    'value' => $service['ServiceCode'],
+                    'data' => $service,
+                ]);
+            });
     }
 
     /**
@@ -191,13 +210,7 @@ final class ParcelPro extends BaseProvider
      */
     private function parseRate(array $rate, array $parameters = []): Rate
     {
-        $carrierValue = match (strtolower($rate['CarrierCode'])) {
-            'fedex' => 'FedEx',
-            'ups' => 'UPS',
-            default => $rate['CarrierCode']
-        };
-
-        $carrier = $this->getCarriers()->where('value', $carrierValue)->first();
+        $carrier = $this->getCarriers()->where('value', $this->normalizeCarrierName($rate['CarrierCode']))->first();
         throw_if(! $carrier, 'Could not identify the carrier from the retrieved quote.');
 
         $service = $this->getServices()->where('value', $rate['ServiceCode'])->first();
@@ -378,7 +391,7 @@ final class ParcelPro extends BaseProvider
         $shipment = $this->request("shipments/$quote->id", [], 'POST')->json();
 
         if (ShipmentStatus::getKey($shipment['Status']) === 'Exception') {
-            throw new Exception('There was an error creating the label.');
+            throw new RuntimeException('There was an error creating the label.');
         }
 
         return new Shipment([

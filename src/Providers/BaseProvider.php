@@ -178,6 +178,22 @@ abstract class BaseProvider implements ShippingProvider
     }
 
     /**
+     * Convert all possible carrier values to one.
+     *
+     * @param string $carrier
+     * @return string
+     */
+    protected function normalizeCarrierName(string $carrier): string
+    {
+        return match (strtolower($carrier)) {
+            'ups' => 'UPS',
+            'fedex' => 'FedEx',
+            'usps' => 'USPS',
+            default => $carrier
+        };
+    }
+
+    /**
      * Handle dynamic static method calls into the method.
      *
      * @param string $method
