@@ -2,6 +2,12 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.7.3 - 2021-11-29
+
+### Changes
+
+- Added delay in calls to Shippo to prevent request test failure due to throttling.
+
 ## 0.7.2 - 2021-11-24
 
 ## What's Changed
