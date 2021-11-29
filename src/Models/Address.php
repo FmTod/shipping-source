@@ -59,14 +59,17 @@ class Address extends Model implements ShippableAddress
 
     protected array $rules = [
         'first_name' => [
+            'nullable',
             'required_without:company',
             'string',
         ],
         'last_name' => [
+            'nullable',
             'required_without:company',
             'string',
         ],
         'company_name' => [
+            'nullable',
             'required_without_all:first_name,last_name',
             'string',
         ],
