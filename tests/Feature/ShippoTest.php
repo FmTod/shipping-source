@@ -78,6 +78,7 @@ it('can be called statically')
     ->toBeInstanceOf(Shippo::class);
 
 it('can retrieve carriers', function () {
+    sleep(10);
     $carriers = $this->service->getCarriers();
 
     expect($carriers)->toBeInstanceOf(Collection::class);
@@ -92,6 +93,7 @@ it('can retrieve services', function () {
 });
 
 it('can retrieve domestic rates', function () {
+    sleep(10);
     $rates = $this->service->getRates();
     expect($rates)->toBeInstanceOf(Collection::class);
 
@@ -107,6 +109,7 @@ it('can retrieve domestic rates', function () {
 });
 
 it('can retrieve domestic rate for a specific carrier and service', function () {
+    sleep(10);
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     expect($carrier)->toBeInstanceOf(Carrier::class);
 
@@ -127,6 +130,7 @@ it('can retrieve domestic rate for a specific carrier and service', function () 
 });
 
 it('can create a domestic shipment', function () {
+    sleep(10);
     $carrier = $this->service->getCarriers()->where('name', 'USPS')->first();
     $services = $this->service->getServices();
     $service = $services->where('carrier', $carrier->name)->first();

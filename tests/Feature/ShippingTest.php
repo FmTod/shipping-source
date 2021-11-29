@@ -51,6 +51,7 @@ beforeEach(function () {
 });
 
 it('can retrieve carriers', function () {
+    sleep(10);
     $carriers = $this->service->carriers();
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Carrier::class);
@@ -63,12 +64,14 @@ it('can retrieve services', function () {
 });
 
 it('can retrieve domestic rates', function () {
+    sleep(10);
     $carriers = $this->service->rates();
     expect($carriers)->toBeInstanceOf(Collection::class);
     expect($carriers->first())->toBeInstanceOf(Rate::class);
 });
 
 it('can create a domestic shipment', function () {
+    sleep(10);
     $rate = $this->service->rates()->where('provider.name', Shippo::NAME)->first();
     expect($rate)->toBeInstanceOf(Rate::class);
 
