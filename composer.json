@@ -28,6 +28,8 @@
         "fmtod/laravel-money": "^7.0.14",
         "guzzlehttp/guzzle": "^7.0",
         "illuminate/contracts": "^8.37",
+        "illuminate/validation": "^8.73",
+        "illuminate/translation": "^8.73",
         "shippo/shippo-php": "^1.4.4",
         "spatie/laravel-package-tools": "^1.9.2"
     },

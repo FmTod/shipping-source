@@ -171,9 +171,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         if ($validator) {
             $this->validator = $validator;
         } else {
-            $filesystem = new Filesystem();
-            $fileLoader = new FileLoader($filesystem, '');
-            $translator = new Translator($fileLoader, 'en_US');
+            $translations = dirname(__DIR__, 2) . '/resources/lang';
+
+            $fileLoader = new FileLoader(new Filesystem(), $translations);
+            $fileLoader->addNamespace('lang', $translations);
+            $fileLoader->load('en', 'validation', 'lang');
+
+            $translator = new Translator($fileLoader, 'en');
 
             $this->validator = new ValidatorFactory($translator);
         }
@@ -331,7 +335,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         }
 
         if ($this->validateOnFill && ! empty($this->rules) && ! $this->validate()) {
-            throw new ValidationException($this->getErrors()->first());
+            $field = $this->getErrors()->keys()[0];
+            $message = $this->getErrors()->first($field);
+
+            throw new ValidationException($message);
         }
 
         return $this;

@@ -16,6 +16,7 @@ class ShippingServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('shipping')
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasTranslations();
     }
 }
