@@ -57,7 +57,9 @@ class Rate extends Model
         }
 
         if (isset($properties['amount']) && is_array($properties['amount'])) {
-            $properties['amount'] = Money::parse($properties['amount']['value'], $properties['amount']['currency']);
+            $properties['amount'] = isset($properties['amount']['amount'])
+                ? new Money($properties['amount']['amount'], $properties['amount']['currency'])
+                : Money::parse($properties['amount']['value'], $properties['amount']['currency']);
         }
 
         parent::__construct($properties);
