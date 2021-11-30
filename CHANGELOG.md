@@ -2,6 +2,12 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.7.5 - 2021-11-30
+
+### Changes
+
+Update the construct method in for the Rate class so that it can be hydrated correctly from its array representation.
+
 ## 0.7.3 - 2021-11-29
 
 ### Changes
