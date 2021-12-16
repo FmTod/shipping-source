@@ -16,11 +16,11 @@ interface ShippingProvider
 
     public function getServices(): Collection;
 
-    public function setConsignor(ShippableAddress $shipment): static;
+    public function setConsignor(ShippableAddress $address): self;
 
-    public function setConsignee(ShippableAddress $shipment): static;
+    public function setConsignee(ShippableAddress $address): self;
 
-    public function setPackage(ShippablePackage $shipment): static;
+    public function setPackage(ShippablePackage $package): self;
 
     public function getConsignor(): ?ShippableAddress;
 
@@ -28,7 +28,7 @@ interface ShippingProvider
 
     public function getPackage(): ?ShippablePackage;
 
-    public function setConfig(array $config): static;
+    public function setConfig(array $config): self;
 
     public function getRates(array $parameters = []): Collection;
 

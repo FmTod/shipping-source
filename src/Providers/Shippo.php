@@ -42,7 +42,7 @@ final class Shippo extends BaseProvider
      * @param array $config
      * @return static
      */
-    public function setConfig(array $config = []): static
+    public function setConfig(array $config = []): Shippo
     {
         parent::setConfig($config);
 
@@ -51,6 +51,17 @@ final class Shippo extends BaseProvider
         }
 
         return $this;
+    }
+
+    protected function parseServiceName(string $service): string
+    {
+        $key = "shipping::shippo.services.$service";
+
+        if ($key === ($translation = trans($key))) {
+            return Str::title(str_replace('_', ' ', Str::after($service, '_')));
+        }
+
+        return $translation;
     }
 
     /**
@@ -144,7 +155,7 @@ final class Shippo extends BaseProvider
             ->map(fn (string $service) => new Service([
                 'provider' => self::NAME,
                 'carrier' => $this->normalizeCarrierName(Str::title(Str::before($service, '_'))),
-                'name' => Str::title(str_replace('_', ' ', Str::after($service, '_'))),
+                'name' => $this->parseServiceName($service),
                 'value' => $service,
             ]));
     }

@@ -76,7 +76,7 @@ abstract class BaseProvider implements ShippingProvider
      * @param array $config
      * @return static
      */
-    public function setConfig(array $config = []): static
+    public function setConfig(array $config = []): self
     {
         // validate the config array
         if (! is_array($config)) {
@@ -94,7 +94,7 @@ abstract class BaseProvider implements ShippingProvider
      * @param \FmTod\Shipping\Contracts\ShippableAddress $address
      * @return $this
      */
-    public function setConsignor(ShippableAddress $address): static
+    public function setConsignor(ShippableAddress $address): self
     {
         $this->consignor = $address;
 
@@ -107,7 +107,7 @@ abstract class BaseProvider implements ShippingProvider
      * @param \FmTod\Shipping\Contracts\ShippableAddress $address
      * @return $this
      */
-    public function setConsignee(ShippableAddress $address): static
+    public function setConsignee(ShippableAddress $address): self
     {
         $this->consignee = $address;
 
@@ -120,7 +120,7 @@ abstract class BaseProvider implements ShippingProvider
      * @param \FmTod\Shipping\Contracts\ShippablePackage $package
      * @return $this
      */
-    public function setPackage(ShippablePackage $package): static
+    public function setPackage(ShippablePackage $package): self
     {
         $this->package = $package;
 
