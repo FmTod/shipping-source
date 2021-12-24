@@ -2,6 +2,14 @@
 
 All notable changes to `shipping` will be documented in this file.
 
+## 0.7.7 - 2021-12-24
+
+## What's Changed
+
+- Updated laravel-money package to v8
+
+**Full Changelog**: https://github.com/FmTod/shipping-source/compare/0.7.6...0.7.7
+
 ## 0.7.6 - 2021-12-16
 
 **Full Changelog**: https://github.com/FmTod/shipping-source/compare/0.7.5...0.7.6
